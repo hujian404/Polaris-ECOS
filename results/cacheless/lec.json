@@ -1,0 +1,7 @@
+{
+  "status": "proven",
+  "golden_sha256": "b39a747cb79a871f12bc0ae8af2652fe64d6c02a5e238095cbdbf61e7d2346ea",
+  "gate_sha256": "e1903f24203deeba87097a3656288d843a5623089b9e42c85916475343216365",
+  "golden_size_bytes": 27066291,
+  "gate_size_bytes": 32546736
+}

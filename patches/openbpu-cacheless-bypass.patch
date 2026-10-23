@@ -1,0 +1,50 @@
+diff --git a/src/main/scala/PolarisCore/mem/EmbeddedTLB.scala b/src/main/scala/PolarisCore/mem/EmbeddedTLB.scala
+index ec64645..57a98ad 100644
+--- a/src/main/scala/PolarisCore/mem/EmbeddedTLB.scala
++++ b/src/main/scala/PolarisCore/mem/EmbeddedTLB.scala
+@@ -433,7 +433,10 @@ class EmbeddedTLB_fake(implicit val tlbConfig: TLBConfig) extends TlbModule with
+   io.csrMMU.addr := io.in.req.bits.addr
+   io.ipf := false.B
+   val ismmio = io.out.req.fire() && AddressSpace.isMMIO(io.in.req.bits.addr)	
+-  BoringUtils.addSource(ismmio,"lsuMMIO")
++  // ECOS adapter: instruction and data bypasses must not both drive this pin.
++  if (tlbConfig.name == "dtlb") {
++    BoringUtils.addSource(ismmio,"lsuMMIO")
++  }
+ }
+ 
+ 
+@@ -936,4 +939,4 @@ class SIMD_TLBEXEC_INBUNDLE(implicit val tlbConfig: TLBConfig)  extends TlbBundl
+   val loadPF = Output(Bool())
+   val storePF = Output(Bool())
+   val hitinstrPF = Output(Bool())
+-}
+\ No newline at end of file
++}
+diff --git a/src/main/scala/PolarisCore/mem/bank_Cache.scala b/src/main/scala/PolarisCore/mem/bank_Cache.scala
+index a9826a1..4eef5c5 100755
+--- a/src/main/scala/PolarisCore/mem/bank_Cache.scala
++++ b/src/main/scala/PolarisCore/mem/bank_Cache.scala
+@@ -591,14 +591,19 @@ class MBCache(implicit val cacheConfig: MBCacheConfig) extends MBCacheModule wit
+ 
+ 
+ class MBCache_fake(implicit val cacheConfig: MBCacheConfig) extends MBCacheModule with MBHasCacheIO {
++  // ECOS course adapter: this uncached path handles scalar requests only.
++  // SimpleBusReqBundle.apply does not initialize the added vector fields.
++  require(!Settings.get("Polaris_Vector_LDST"), "MBCache_fake does not implement vector LD/ST")
++  io.out.mem.req.bits.vector := 0.U.asTypeOf(io.out.mem.req.bits.vector)
++  io.mmio.req.bits.vector := 0.U.asTypeOf(io.mmio.req.bits.vector)
++  io.in.resp.bits.vector := 0.U.asTypeOf(io.in.resp.bits.vector)
++
+   val s_idle :: s_memReq :: s_memResp :: s_mmioReq :: s_mmioResp :: s_wait_resp :: Nil = Enum(6)
+   val state = RegInit(s_idle)
+ 
+   val ismmio = AddressSpace.isMMIO(io.in.req.bits.addr)
+   val ismmioRec = RegEnable(ismmio, io.in.req.fire())
+-  if (cacheConfig.name == "dcache") {
+-    BoringUtils.addSource(ismmio, "lsuMMIO")
+-  }
++  // ECOS adapter: lsuMMIO has a single source in the data TLB path.
+ 
+   val needFlush = RegInit(false.B)
+   when (io.flush(0) && (state =/= s_idle)) { needFlush := true.B }
