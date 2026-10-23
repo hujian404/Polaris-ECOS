@@ -1,11 +1,11 @@
 {
-  "variant": "cacheless",
+  "variant": "sram-ip",
   "processor_source": "actual local OpenBPU2 snapshot, not pristine upstream",
   "upstreams": [
     "https://github.com/ByeBeihai/Polaris",
     "https://gitee.com/OpenBPU/OpenBPU2"
   ],
-  "rtl_sha256": "b858e8ec5aa15e1262718ad2cd514b40e3f8549a1a1fdc12194612ef2885b22e",
+  "rtl_sha256": "4ad21a21ed7c49628d43e17182910e057c1a7a4579a0376b4becb606c4f3d366",
   "sdc_sha256": "c9b152dae34948702568abdc996bf0b1c8803a35bc97d67be512a8cc9a779ea3",
-  "status": "frozen recorded setup/hold/DRC/LVS result; see electrical and validation limits"
+  "status": "Work in progress: functional integration and placement only; CTS incomplete, no final SRAM GDS"
 }

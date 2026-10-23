@@ -1,4 +1,6 @@
-# Polaris-ECOS
+# Polaris-ECOS — SRAM IP 工作分支
+
+> **当前为 `sram-ip`：CTS 尚未闭合，没有 SRAM 配置最终 GDS。** 已完成的无缓存基线请使用 [`main`](https://github.com/hujian404/Polaris-ECOS/tree/main) 或 `v1.0.0-cacheless`。当前分支的接口、配置、结果与继续方法见 [docs/sram.md](docs/sram.md)。
 
 基于开源 **ECOS** 工具链，对开源脑启发处理器 **OpenBPU2 / Polaris** 进行 RTL 到 GDS 实现、验证和技术复现。
 
@@ -29,22 +31,22 @@
 
 ## 快速开始
 
-Linux / WSL Ubuntu 22.04，Python 3.10+、Verilator、C++ 编译器；重新生成 Chisel 另需 JDK 11 和 mill 0.9.10。可直接使用已冻结的 `rtl/Polaris.v`，不依赖 Chisel 下载才能检查 RTL。
+Linux / WSL Ubuntu 22.04，Python 3.10+、Verilator、C++ 编译器；重新生成 Chisel 另需 JDK 11 和 mill 0.9.10。当前冻结 RTL 是缓存配置，需要官方宏模型；原无缓存生成入口不可覆盖该 RTL。
 
 ```sh
 git clone https://github.com/hujian404/Polaris-ECOS.git
 cd Polaris-ECOS
 python3 scripts/check_release.py
-bash sim/run.sh
+python3 sim/run_sram.py --sram-root /opt/ics55-sram
 ```
 
 获取 ECOS 指定集成包及配套 PDK 后，按 [复现说明](docs/reproduce.md) 设置本机工具路径、安装可选综合控制，生成项目配置并按阶段运行。**不要将占位路径当作已安装工具。**
 
 ```sh
 python3 flow/configure.py --bundle /opt/ecos-nightly-linux-x86_64 \
-  --oss-cad /opt/oss-cad-suite --out local/cacheless
+  --oss-cad /opt/oss-cad-suite --sram-root /opt/ics55-sram --out local/sram
 python3 flow/patch_yosys.py --script /opt/ecos-nightly-linux-x86_64/ecc/_internal/chipcompiler/tools/yosys/scripts/yosys_synthesis.tcl
-python3 flow/run.py --project local/cacheless --workspace runs/synthesis --from synthesis --to synthesis
+python3 flow/run.py --project local/sram --workspace runs/synthesis --from synthesis --to synthesis
 ```
 
 完整复现需要重新执行功能门禁和各阶段检查；公开流程封装经过配置/结构与 RTL 功能检查，**没有为了发布再次重跑多日物理流程**。历史通过数据与新封装的验证范围分别记录。

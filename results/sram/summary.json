@@ -1,0 +1,134 @@
+{
+  "macro_interfaces": {
+    "scope": "Real official SRAM core functional model tests and Liberty binding for three compatible 1RW interfaces. Not full cached-processor validation; no GDS supplied by these packages.",
+    "checks": {
+      "128x74": 3635,
+      "512x76": 4421,
+      "4096x256_banked": 11550
+    }
+  },
+  "rtl_mmio": {
+    "scope": "Original cached RTL module region plus pure AXI renaming. Three 1RW types use real official SRAM functional cores; two 1R1W types use synthesizable soft storage. Zero-delay --no-timing program check; no complete ISA or physical integration claim.",
+    "tests": [
+      {
+        "stall": 0,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=552 address=40600100 data=0000000000000007 strobe=ff\nPASS cached SRAM RV64/MMIO smoke test: cycles=553 reads=2 writes=1 observed_wb=4 stall=0\n",
+        "stderr": ""
+      },
+      {
+        "stall": 3,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=556 address=40600100 data=0000000000000007 strobe=ff\nPASS cached SRAM RV64/MMIO smoke test: cycles=557 reads=2 writes=1 observed_wb=4 stall=3\n",
+        "stderr": ""
+      },
+      {
+        "stall": 7,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=564 address=40600100 data=0000000000000007 strobe=ff\nPASS cached SRAM RV64/MMIO smoke test: cycles=565 reads=2 writes=1 observed_wb=4 stall=7\n",
+        "stderr": ""
+      }
+    ],
+    "build_returncode": 0
+  },
+  "rtl_memory": {
+    "scope": "Cached hybrid RTL: sd 7 to 0x80001000, 32 NOPs, ld into x3, add 5, sd x3 to MMIO 0x40600100. Finite data-path coverage; not exhaustive cache/coherence validation.",
+    "tests": [
+      {
+        "stall": 0,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=639 address=40600100 data=000000000000000c strobe=ff\nPASS cached SRAM data store/load/MMIO smoke test: cycles=640 reads=7 writes=1 observed_wb=23 stall=0\n",
+        "stderr": ""
+      },
+      {
+        "stall": 3,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=663 address=40600100 data=000000000000000c strobe=ff\nPASS cached SRAM data store/load/MMIO smoke test: cycles=664 reads=7 writes=1 observed_wb=23 stall=3\n",
+        "stderr": ""
+      },
+      {
+        "stall": 7,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=711 address=40600100 data=000000000000000c strobe=ff\nPASS cached SRAM data store/load/MMIO smoke test: cycles=712 reads=7 writes=1 observed_wb=23 stall=7\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "mapped": {
+    "scope": "Recovered actual mapped cached design, pure boundary wires, Liberty-derived standard cells and official SRAM cores. Zero-delay finite program tests, not timing or full cache validation.",
+    "tests": [
+      {
+        "program": "mmio",
+        "stall": 0,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=552 address=40600100 data=0000000000000007 strobe=ff\nPASS cached SRAM RV64/MMIO smoke test: cycles=553 reads=2 writes=1 observed_wb=4 stall=0\n",
+        "stderr": ""
+      },
+      {
+        "program": "mmio",
+        "stall": 3,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=556 address=40600100 data=0000000000000007 strobe=ff\nPASS cached SRAM RV64/MMIO smoke test: cycles=557 reads=2 writes=1 observed_wb=4 stall=3\n",
+        "stderr": ""
+      },
+      {
+        "program": "mmio",
+        "stall": 7,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=564 address=40600100 data=0000000000000007 strobe=ff\nPASS cached SRAM RV64/MMIO smoke test: cycles=565 reads=2 writes=1 observed_wb=4 stall=7\n",
+        "stderr": ""
+      },
+      {
+        "program": "cached-memory",
+        "stall": 0,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=639 address=40600100 data=000000000000000c strobe=ff\nPASS cached SRAM data store/load/MMIO smoke test: cycles=640 reads=7 writes=1 observed_wb=23 stall=0\n",
+        "stderr": ""
+      },
+      {
+        "program": "cached-memory",
+        "stall": 3,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=663 address=40600100 data=000000000000000c strobe=ff\nPASS cached SRAM data store/load/MMIO smoke test: cycles=664 reads=7 writes=1 observed_wb=23 stall=3\n",
+        "stderr": ""
+      },
+      {
+        "program": "cached-memory",
+        "stall": 7,
+        "returncode": 0,
+        "stdout": "MMIOSTORE cycle=711 address=40600100 data=000000000000000c strobe=ff\nPASS cached SRAM data store/load/MMIO smoke test: cycles=712 reads=7 writes=1 observed_wb=23 stall=7\n",
+        "stderr": ""
+      }
+    ],
+    "build_returncode": 0
+  },
+  "status": "CTS incomplete; no final SRAM GDS",
+  "mapped_cells": 2828964,
+  "mapped_area_um2": 9098325.92,
+  "macro_counts": {
+    "ics55_ecos_sram_128x74_m4": 4,
+    "ics55_ecos_sram_4096x64_m4": 4,
+    "ics55_ecos_sram_512x76_m4": 1
+  },
+  "recovered_netlist": {
+    "bytes": 346101494,
+    "sha256": "ac2865411e17a19d65daa38c8222c328b8fcf730a362c507aec333340ce19e0e",
+    "gzip_bytes": 63498267,
+    "gzip_sha256": "3fa297a2c7a3e2f6a2bf0202ca15fb85fe19ab88be191024ddd009f678b8b12c"
+  },
+  "placement": "Success; clustered full placement completed",
+  "cts": {
+    "macro_cluster_skew_ns": 0.057312,
+    "skew_limit_ns": 0.08,
+    "regular_sinks": 589378,
+    "native_root_result": "no_strict_boundary_feasible_solution_any_depth",
+    "strong_only": "Incomplete",
+    "unit7": "externally stopped after 12 hours; returncode -15; native Ongoing state preserved, not Success"
+  },
+  "missing_view": "official selected packages provide functional Verilog/LEF/Liberty but no transistor-level GDS",
+  "public_packaging_checks": [
+    "all three real macro interfaces rerun and passed",
+    "native ecc check passed with actual local macro libraries",
+    "metadata/source identity and privacy checks passed"
+  ]
+}

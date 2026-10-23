@@ -1,0 +1,21 @@
+
+[[params.sta.liberty]]
+corner = "MAX"
+temperature = 125
+path = ["__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CR/liberty/ics55_LLSC_H7CR_ss_rcworst_1p08_125_nldm.lib", "__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CL/liberty/ics55_LLSC_H7CL_ss_rcworst_1p08_125_nldm.lib", "__SRAM__/ics55_ecos_sram_128x74_m4/lib/ics55_ecos_sram_128x74_m4_ss1p08v125ccmax.lib", "__SRAM__/ics55_ecos_sram_512x76_m4/lib/ics55_ecos_sram_512x76_m4_ss1p08v125ccmax.lib", "__SRAM__/ics55_ecos_sram_4096x64_m4/lib/ics55_ecos_sram_4096x64_m4_ss1p08v125ccmax.lib"]
+[[params.sta.liberty]]
+corner = "WCL"
+temperature = -40
+path = ["__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CR/liberty/ics55_LLSC_H7CR_ss_cworst_1p08_m40_nldm.lib", "__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CL/liberty/ics55_LLSC_H7CL_ss_cworst_1p08_m40_nldm.lib", "__SRAM__/ics55_ecos_sram_128x74_m4/lib/ics55_ecos_sram_128x74_m4_ss1p08vm40ccmax.lib", "__SRAM__/ics55_ecos_sram_512x76_m4/lib/ics55_ecos_sram_512x76_m4_ss1p08vm40ccmax.lib", "__SRAM__/ics55_ecos_sram_4096x64_m4/lib/ics55_ecos_sram_4096x64_m4_ss1p08vm40ccmax.lib"]
+[[params.sta.liberty]]
+corner = "TYP"
+temperature = 25
+path = ["__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CR/liberty/ics55_LLSC_H7CR_typ_tt_1p2_25_nldm.lib", "__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CL/liberty/ics55_LLSC_H7CL_typ_tt_1p2_25_nldm.lib", "__SRAM__/ics55_ecos_sram_128x74_m4/lib/ics55_ecos_sram_128x74_m4_tt1p2v25cctyp.lib", "__SRAM__/ics55_ecos_sram_512x76_m4/lib/ics55_ecos_sram_512x76_m4_tt1p2v25cctyp.lib", "__SRAM__/ics55_ecos_sram_4096x64_m4/lib/ics55_ecos_sram_4096x64_m4_tt1p2v25cctyp.lib"]
+[[params.sta.liberty]]
+corner = "MIN"
+temperature = -40
+path = ["__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CR/liberty/ics55_LLSC_H7CR_ff_rcbest_1p32_m40_nldm.lib", "__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CL/liberty/ics55_LLSC_H7CL_ff_rcbest_1p32_m40_nldm.lib", "__SRAM__/ics55_ecos_sram_128x74_m4/lib/ics55_ecos_sram_128x74_m4_ff1p32vm40ccmin.lib", "__SRAM__/ics55_ecos_sram_512x76_m4/lib/ics55_ecos_sram_512x76_m4_ff1p32vm40ccmin.lib", "__SRAM__/ics55_ecos_sram_4096x64_m4/lib/ics55_ecos_sram_4096x64_m4_ff1p32vm40ccmin.lib"]
+[[params.sta.liberty]]
+corner = "ML"
+temperature = 125
+path = ["__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CR/liberty/ics55_LLSC_H7CR_ff_cbest_1p32_125_nldm.lib", "__PDK__/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/ics55_LLSC_H7CL/liberty/ics55_LLSC_H7CL_ff_cbest_1p32_125_nldm.lib", "__SRAM__/ics55_ecos_sram_128x74_m4/lib/ics55_ecos_sram_128x74_m4_ff1p32v125ccmin.lib", "__SRAM__/ics55_ecos_sram_512x76_m4/lib/ics55_ecos_sram_512x76_m4_ff1p32v125ccmin.lib", "__SRAM__/ics55_ecos_sram_4096x64_m4/lib/ics55_ecos_sram_4096x64_m4_ff1p32v125ccmin.lib"]
