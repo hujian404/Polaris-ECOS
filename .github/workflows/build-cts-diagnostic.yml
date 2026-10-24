@@ -34,7 +34,21 @@ jobs:
           git apply course/patches/cts-root-boundary-diagnostics.patch
           git rev-parse HEAD > diagnostic-source.txt
           sha256sum course/patches/cts-root-boundary-diagnostics.patch >> diagnostic-source.txt
+      - name: Configure Python extension development without embedding
+        shell: bash
+        run: |
+          /opt/python/cp311-cp311/bin/python - <<'PY'
+          from pathlib import Path
+          path = Path("CMakeLists.txt")
+          text = path.read_text()
+          marker = "add_subdirectory(src/third_party)"
+          assert text.count(marker) == 1, "Upstream CMake layout changed"
+          discovery = "find_package(Python 3.11 REQUIRED COMPONENTS Interpreter Development.Module)"
+          path.write_text(text.replace(marker, discovery + "\n\n" + marker))
+          PY
+          git diff --check
           git diff --stat >> diagnostic-source.txt
+          git diff > diagnostic-build.patch
       - name: Build with official upstream action
         uses: ./.github/actions/build-wheel
       - name: Check native module import
@@ -49,6 +63,7 @@ jobs:
           path: |
             dist/wheel/repaired/*.whl
             diagnostic-source.txt
+            diagnostic-build.patch
           if-no-files-found: error
       - name: Upload build configuration on failure
         if: failure()
@@ -57,6 +72,7 @@ jobs:
           name: cts-diagnostic-build-logs
           path: |
             diagnostic-source.txt
+            diagnostic-build.patch
             build/CMakeFiles/CMakeConfigureLog.yaml
             build/CMakeCache.txt
           if-no-files-found: ignore
