@@ -1,0 +1,23 @@
+--- a/src/operation/iCTS/source/module/synthesis/htree/topology_pruning/TopologyPruning.cc
++++ b/src/operation/iCTS/source/module/synthesis/htree/topology_pruning/TopologyPruning.cc
+@@ -342,6 +342,20 @@
+   result.success = !current_frontier_entries.empty();
+   const auto compensation_result = compensation_pass.apply(current_frontier_entries, result.topology_pattern_library, segment_pattern_library, topology);
+   if (current_frontier_entries.empty()) {
++    CTSLOG.warn(Loc::current(), "HTree root-boundary rejection: input_candidates=", compensation_result.input_candidate_count,
++                ", closed_candidates=", compensation_result.closed_candidate_count,
++                ", rejected_candidates=", compensation_result.rejected_candidate_count);
++    if (compensation_result.has_first_rejected_boundary) {
++      const auto& rejected = compensation_result.first_rejected_boundary;
++      CTSLOG.warn(Loc::current(), "HTree first rejected root boundary: compensation_valid=", rejected.compensation_valid,
++                  ", cap_bucket_matches=", rejected.cap_bucket_matches, ", slew_bucket_matches=", rejected.slew_bucket_matches,
++                  ", raw_cap_bucket=", rejected.raw_cap_bucket_idx,
++                  ", physical_load_bucket=", rejected.physical_load_bucket_idx,
++                  ", physical_source_boundary_bucket=", rejected.physical_source_boundary_bucket_idx,
++                  ", raw_input_slew_bucket=", rejected.raw_input_slew_idx,
++                  ", root_output_slew_bucket=", rejected.root_output_slew_bucket_idx,
++                  ", compensation_failure=", rejected.compensation.failure_reason);
++    }
+     result.success = false;
+     result.failure_reason
+         = compensation_result.rejected_candidate_count > 0U ? "empty_frontier_after_root_boundary_closure" : "empty_frontier_after_compensation";

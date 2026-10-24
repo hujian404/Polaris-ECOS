@@ -155,7 +155,7 @@
       "scope": "Same clustered placement and all original timing/electrical limits; not an external timeout."
     },
     "expanded_buffer_control": {
-      "status": "input_import_in_progress",
+      "status": "Incomplete",
       "buffers": [
         "BUFX2H7L",
         "BUFX4H7L",
@@ -166,7 +166,31 @@
       ],
       "native_configuration_verified": true,
       "cts_external_limit_seconds": 7200,
-      "scope": "Pending diagnostic only; all original timing/electrical limits retained; no result claimed."
+      "scope": "Native failed result, not an external timeout; all timing/electrical limits retained. No subsequent physical/signoff steps ran.",
+      "native_runtime": "0:28:20",
+      "returncode": 1,
+      "macro_domain": "finished",
+      "regular_domain": "failed",
+      "regular_sinks": 589378,
+      "depth_candidates": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "failure_reason": "empty_frontier_after_root_boundary_closure",
+      "segment_frontier_entries": 228262,
+      "clock_tree_committed": false
+    },
+    "diagnostic_patch": {
+      "file": "patches/cts-root-boundary-diagnostics.patch",
+      "scope": "Logging only; no filtering or constraints changed",
+      "context_check": "passed against recorded source snapshot",
+      "compiled": false,
+      "run_in_native_binary": false
     }
   },
   "missing_view": "official selected packages provide functional Verilog/LEF/Liberty but no transistor-level GDS",

@@ -50,10 +50,18 @@ python3 reproducers/materialize_sram_clock.py --pdk /opt/ecos/pdk \
 
 H7CR X8/X12/X16/X20替换原H7CL集合后，原生CTS仍为 `Incomplete`，阶段耗时26分01秒；九宏域finished，589378个普通汇点失败，深度1至7均在严格根边界闭合后无候选。此轮不是外部超时，没有进入布线。结果已回存并补充到Issue357。
 
-源码 `SynthesisState.cc` 使用最小候选缓冲器实现汇点负载分组的拆分。新增独立对照保留原四种H7CL缓冲器，再加入X2/X4，已核验七个Liberty视图、LEF及实际生成配置。对照仍处于输入导入，尚无CTS通过结论；后续以原生报告更新状态。它只扩大候选集合，不放宽约束。复现时在独立项目的 `[params.cts]` 中使用：
+源码 `SynthesisState.cc` 使用最小候选缓冲器实现汇点负载分组的拆分。新增独立对照保留原四种H7CL缓冲器，再加入X2/X4，已核验七个Liberty视图、LEF及实际生成配置。该对照已原生返回 `Incomplete`（28分20秒），九宏域finished，普通域在深度1至7均因根边界闭合后无候选失败；分段前沿增加至228262项，没有时钟树提交，也未进入布线。此轮不是外部超时。它只扩大候选集合，不放宽约束。复现时在独立项目的 `[params.cts]` 中使用：
 
 ```toml
 buffer_type = ["BUFX2H7L", "BUFX4H7L", "BUFX8H7L", "BUFX12H7L", "BUFX16H7L", "BUFX20H7L"]
 ```
 
 所查源码明确不将 `cap_steps` / `slew_steps` 暴露为外部配置，不能将它们写入JSON后当成生效参数；采样或筛选逻辑的进一步修改须有可验证的源码构建和独立验证。
+
+## 根边界诊断补丁
+
+重复对照均在同一根边界闭合位置失败。已整理 [仅增加诊断的补丁](../patches/cts-root-boundary-diagnostics.patch)，针对所查源码中的 `TopologyPruning.cc`，在候选被拒绝后打印输入/闭合/拒绝候选数，以及首个被拒绝项的补偿有效性、负载桶和转换时间桶信息。首个拒绝样本不能代表所有候选的原因。补丁不改变判据、前沿或约束；它是诊断建议，不是CTS修复。
+
+该补丁已对记录的上游源码完成 `git apply --check`，**尚未编译，也未在原生ECC中运行**。原始源码快照树为 `321f878e94de68392a95a16878ee0ff8005eeb43`；套用其他版本前需重新检查，并按上游构建流程生成独立工具后验证。源码上下文来自ECC Tools/iEDA，保留其MulanPSL-2.0许可。
+
+另核对了ECOS Installer的nightly.20261023发布清单，其ECC提交与本实验安装包相同；更新了Studio、Sizer和PDK，不足以据此认定CTS已有修复。当前暂无正在运行的SRAM物理任务。
