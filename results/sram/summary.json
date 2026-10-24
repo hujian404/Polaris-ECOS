@@ -123,7 +123,51 @@
     "regular_sinks": 589378,
     "native_root_result": "no_strict_boundary_feasible_solution_any_depth",
     "strong_only": "Incomplete",
-    "unit7": "externally stopped after 12 hours; returncode -15; native Ongoing state preserved, not Success"
+    "unit7": "externally stopped after 12 hours; returncode -15; native Ongoing state preserved, not Success",
+    "h7cr_family_control": {
+      "native_status": "Incomplete",
+      "native_runtime": "0:26:1",
+      "returncode": 1,
+      "macro_sinks": 9,
+      "macro_domain": "finished",
+      "regular_sinks": 589378,
+      "regular_domain": "failed",
+      "failure_reason": "no_strict_boundary_feasible_solution_any_depth",
+      "depth_candidates": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "per_depth_reason": "empty_frontier_after_root_boundary_closure",
+      "segment_frontier_entries": 154248,
+      "clock_tree_committed": false,
+      "buffers": [
+        "BUFX8H7R",
+        "BUFX12H7R",
+        "BUFX16H7R",
+        "BUFX20H7R"
+      ],
+      "minimum_strongest_max_cap_pf": 0.457909,
+      "scope": "Same clustered placement and all original timing/electrical limits; not an external timeout."
+    },
+    "expanded_buffer_control": {
+      "status": "input_import_in_progress",
+      "buffers": [
+        "BUFX2H7L",
+        "BUFX4H7L",
+        "BUFX8H7L",
+        "BUFX12H7L",
+        "BUFX16H7L",
+        "BUFX20H7L"
+      ],
+      "native_configuration_verified": true,
+      "cts_external_limit_seconds": 7200,
+      "scope": "Pending diagnostic only; all original timing/electrical limits retained; no result claimed."
+    }
   },
   "missing_view": "official selected packages provide functional Verilog/LEF/Liberty but no transistor-level GDS",
   "public_packaging_checks": [
