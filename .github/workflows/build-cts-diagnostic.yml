@@ -1,0 +1,59 @@
+name: Build CTS diagnostic tool
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    container: quay.io/pypa/manylinux_2_34_x86_64
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: '2'
+    steps:
+      - name: Checkout pinned upstream tool source
+        uses: actions/checkout@v4
+        with:
+          repository: openecos-projects/ecc-tools
+          ref: dfb4a3b4f1181d81d0fec9f82d9abeaae942aec8
+          persist-credentials: false
+      - name: Checkout diagnostic proposal
+        uses: actions/checkout@v4
+        with:
+          repository: hujian404/Polaris-ECOS
+          ref: a539da76e4dcb59f550389f61a823217aad42c79
+          path: course
+          persist-credentials: false
+      - name: Check and apply logging-only patch
+        shell: bash
+        run: |
+          git apply --check course/patches/cts-root-boundary-diagnostics.patch
+          git apply course/patches/cts-root-boundary-diagnostics.patch
+          git rev-parse HEAD > diagnostic-source.txt
+          sha256sum course/patches/cts-root-boundary-diagnostics.patch >> diagnostic-source.txt
+          git diff --stat >> diagnostic-source.txt
+      - name: Build with official upstream action
+        uses: ./.github/actions/build-wheel
+      - name: Check native module import
+        shell: bash
+        run: |
+          uv pip install --python .venv/bin/python dist/wheel/repaired/*.whl
+          .venv/bin/python -c 'from ecc_tools_bin import ecc_py; print(ecc_py.__file__)'
+      - name: Upload isolated diagnostic wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: cts-diagnostic-wheel
+          path: |
+            dist/wheel/repaired/*.whl
+            diagnostic-source.txt
+          if-no-files-found: error
+      - name: Upload build configuration on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cts-diagnostic-build-logs
+          path: |
+            diagnostic-source.txt
+            build/CMakeFiles/CMakeConfigureLog.yaml
+            build/CMakeCache.txt
+          if-no-files-found: ignore
