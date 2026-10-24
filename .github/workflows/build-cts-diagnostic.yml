@@ -51,11 +51,9 @@ jobs:
           git diff > diagnostic-build.patch
       - name: Build with official upstream action
         uses: ./.github/actions/build-wheel
-      - name: Check native module import
+      - name: Record and upload compiled diagnostic wheel
         shell: bash
-        run: |
-          uv pip install --python .venv/bin/python dist/wheel/repaired/*.whl
-          .venv/bin/python -c 'from ecc_tools_bin import ecc_py; print(ecc_py.__file__)'
+        run: sha256sum dist/wheel/repaired/*.whl >> diagnostic-source.txt
       - name: Upload isolated diagnostic wheel
         uses: actions/upload-artifact@v4
         with:
@@ -65,6 +63,20 @@ jobs:
             diagnostic-source.txt
             diagnostic-build.patch
           if-no-files-found: error
+      - name: Check installed native module in isolated Python mode
+        shell: bash
+        run: |
+          uv pip install --python .venv/bin/python dist/wheel/repaired/*.whl
+          .venv/bin/python -I - <<'PY'
+          from pathlib import Path
+          import sys
+          from ecc_tools_bin import ecc_py
+          module = Path(ecc_py.__file__).resolve()
+          prefix = Path(sys.prefix).resolve()
+          assert module.is_relative_to(prefix), f"Expected installed wheel under {prefix}, got {module}"
+          assert module.name.endswith(".so"), module
+          print("Installed native module:", module)
+          PY
       - name: Upload build configuration on failure
         if: failure()
         uses: actions/upload-artifact@v4
