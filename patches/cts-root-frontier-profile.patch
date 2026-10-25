@@ -1,0 +1,123 @@
+--- a/src/operation/iCTS/source/module/synthesis/htree/topology_pruning/TopologyPruning.cc
++++ b/src/operation/iCTS/source/module/synthesis/htree/topology_pruning/TopologyPruning.cc
+@@ -24,6 +24,8 @@
+ #include "synthesis/htree/topology_pruning/TopologyPruning.hh"
+ 
+ #include <algorithm>
++#include <chrono>
++#include <cstdint>
+ #include <cstddef>
+ #include <iterator>
+ #include <limits>
+@@ -224,6 +226,14 @@
+     return {{}, start_pattern_id};
+   }
+ 
++  const auto profile_compose_start = std::chrono::steady_clock::now();
++  std::uint64_t profile_pairs = 0U;
++  std::uint64_t profile_semantic_rejected = 0U;
++  std::uint64_t profile_cost_dominated = 0U;
++  std::uint64_t profile_committed = 0U;
++  std::uint64_t profile_removed = 0U;
++  std::uint64_t profile_next_progress = 1000000U;
++  std::size_t profile_largest_bucket = 0U;
+   TopologyPatternLibraryCombiner combiner(topology_library, start_pattern_id, fanout_config.max_fanout, fanout_config.topology_branching_factor);
+   std::unordered_map<unsigned, std::vector<std::size_t>> downstream_entries_by_key;
+   downstream_entries_by_key.reserve(downstream.size());
+@@ -240,8 +250,20 @@
+     }
+ 
+     for (const auto downstream_index : downstream_it->second) {
++      ++profile_pairs;
++      if (profile_pairs == profile_next_progress) {
++        CTSLOG.info(Loc::current(), "HTree profile compose progress: pairs=", profile_pairs,
++                    ", upstream=", upstream.size(), ", downstream=", downstream.size(),
++                    ", semantic_rejected=", profile_semantic_rejected, ", cost_dominated=", profile_cost_dominated,
++                    ", committed=", profile_committed, ", largest_bucket=", profile_largest_bucket,
++                    ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - profile_compose_start).count());
++        if (profile_next_progress <= std::numeric_limits<std::uint64_t>::max() / 2U) {
++          profile_next_progress *= 2U;
++        }
++      }
+       const auto& downstream_entry = downstream.at(downstream_index);
+       if (!combiner.canCompose(upstream_entry.get_pattern_id(), downstream_entry.get_pattern_id())) {
++        ++profile_semantic_rejected;
+         continue;
+       }
+ 
+@@ -258,17 +280,22 @@
+         }
+       }
+       if (dominated) {
++        ++profile_cost_dominated;
+         continue;
+       }
+ 
++      const auto profile_before_erase = frontier.size();
+       const auto removed_entries = std::ranges::remove_if(frontier, [&](const HTreeTopologyChar& existing) -> bool { return CostDominates(result, existing); });
+       frontier.erase(removed_entries.begin(), removed_entries.end());
++      profile_removed += profile_before_erase - frontier.size();
+ 
+       const auto committed_pattern_id = combiner.combine(upstream_entry.get_pattern_id(), downstream_entry.get_pattern_id());
+       if (committed_pattern_id != tentative_pattern_id) {
+         CTSLOG.error(Loc::current(), "HTree: tentative topology pattern ID changed before commit.");
+       }
+       frontier.push_back(std::move(result));
++      ++profile_committed;
++      profile_largest_bucket = std::max(profile_largest_bucket, frontier.size());
+     }
+   }
+ 
+@@ -283,6 +310,13 @@
+     frontier_entries.insert(frontier_entries.end(), std::make_move_iterator(entries.begin()), std::make_move_iterator(entries.end()));
+   }
+   SortHTreeFrontierEntries(frontier_entries);
++  CTSLOG.info(Loc::current(), "HTree profile compose summary: pairs=", profile_pairs,
++              ", upstream=", upstream.size(), ", downstream=", downstream.size(),
++              ", semantic_rejected=", profile_semantic_rejected, ", cost_dominated=", profile_cost_dominated,
++              ", committed=", profile_committed, ", removed=", profile_removed,
++              ", states=", frontier_by_state.size(), ", largest_bucket=", profile_largest_bucket,
++              ", output=", frontier_entries.size(),
++              ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - profile_compose_start).count());
+   return {std::move(frontier_entries), combiner.get_next_id()};
+ }
+ 
+@@ -327,6 +361,9 @@
+       continue;
+     }
+ 
++    const auto profile_level_start = std::chrono::steady_clock::now();
++    CTSLOG.info(Loc::current(), "HTree profile level begin: depth=", levels.size(), ", reverse_level=", reverse_level,
++                ", length_idx=", level.aligned_length_idx, ", upstream=", seed_entries.size(), ", downstream=", current_frontier_entries.size());
+     auto [composed_entries, updated_next_pattern_id]
+         = ComposeHTreeFrontierEntries(seed_entries, current_frontier_entries, result.topology_pattern_library, next_topology_pattern_id, fanout_config);
+     next_topology_pattern_id = updated_next_pattern_id;
+@@ -336,11 +373,28 @@
+       return result;
+     }
+     CompactPatternSearchToFrontier(result, current_frontier_entries);
++    CTSLOG.info(Loc::current(), "HTree profile level end: depth=", levels.size(), ", reverse_level=", reverse_level,
++                ", output=", current_frontier_entries.size(), ", retained_patterns=", result.topology_pattern_library.nodes.size(),
++                ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - profile_level_start).count());
+     next_topology_pattern_id = static_cast<unsigned>(result.topology_pattern_library.nodes.size());
+   }
+ 
+   result.success = !current_frontier_entries.empty();
++  const auto profile_root_start = std::chrono::steady_clock::now();
++  const auto profile_root_before = compensation_pass.get_stats();
+   const auto compensation_result = compensation_pass.apply(current_frontier_entries, result.topology_pattern_library, segment_pattern_library, topology);
++  const auto& profile_root_after = compensation_pass.get_stats();
++  CTSLOG.info(Loc::current(), "HTree profile root closure: depth=", levels.size(),
++              ", input=", compensation_result.input_candidate_count, ", closed=", compensation_result.closed_candidate_count,
++              ", rejected=", compensation_result.rejected_candidate_count,
++              ", invalid_compensation=", profile_root_after.invalid_compensation_count - profile_root_before.invalid_compensation_count,
++              ", cap_mismatch_events=", profile_root_after.boundary_cap_bucket_mismatch_count - profile_root_before.boundary_cap_bucket_mismatch_count,
++              ", slew_mismatch_events=", profile_root_after.boundary_slew_bucket_mismatch_count - profile_root_before.boundary_slew_bucket_mismatch_count,
++              ", load_cache_hits=", profile_root_after.load_resolution_cache_hit_count - profile_root_before.load_resolution_cache_hit_count,
++              ", cost_cache_hits=", profile_root_after.cache_hit_count - profile_root_before.cache_hit_count,
++              ", load_resolution_ms=", profile_root_after.load_resolution_runtime_ms - profile_root_before.load_resolution_runtime_ms,
++              ", direct_lookup_ms=", profile_root_after.total_runtime_ms - profile_root_before.total_runtime_ms,
++              ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - profile_root_start).count());
+   if (current_frontier_entries.empty()) {
+     CTSLOG.warn(Loc::current(), "HTree root-boundary rejection: input_candidates=", compensation_result.input_candidate_count,
+                 ", closed_candidates=", compensation_result.closed_candidate_count,
