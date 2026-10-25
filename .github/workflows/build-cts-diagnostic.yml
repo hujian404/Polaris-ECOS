@@ -10,6 +10,10 @@ on:
         description: Build the approved PR319 commit and run native iCTS regressions
         type: boolean
         default: false
+      root_frontier_profile:
+        description: Add root rejection counters and frontier timing (requires reviewed_pr319)
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -30,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hujian404/Polaris-ECOS
-          ref: 5c9e5e3754804ff6f2ce761edce176362961e892
+          ref: 0cd8d448d9e203464f2fda5c0c5cdb5411ddaf2c
           path: course
           persist-credentials: false
       - name: Trust the checked-out workspace in this container
@@ -51,6 +55,16 @@ jobs:
           git apply course/patches/cts-root-boundary-diagnostics.patch
           git rev-parse HEAD > diagnostic-source.txt
           sha256sum course/patches/cts-root-boundary-diagnostics.patch >> diagnostic-source.txt
+      - name: Apply optional root and frontier instrumentation
+        if: ${{ inputs.root_frontier_profile }}
+        shell: bash
+        env:
+          REVIEWED_SOURCE: ${{ inputs.reviewed_pr319 }}
+        run: |
+          test "$REVIEWED_SOURCE" = true
+          git apply --check course/patches/cts-root-frontier-profile.patch
+          git apply course/patches/cts-root-frontier-profile.patch
+          sha256sum course/patches/cts-root-frontier-profile.patch >> diagnostic-source.txt
       - name: Apply optional source-trunk membership candidate
         if: ${{ inputs.source_trunk_membership_fix && !inputs.reviewed_pr319 }}
         shell: bash
