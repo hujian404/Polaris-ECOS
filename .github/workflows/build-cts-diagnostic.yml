@@ -3,7 +3,11 @@ on:
   workflow_dispatch:
     inputs:
       source_trunk_membership_fix:
-        description: Apply the unvalidated source-trunk membership candidate
+        description: Apply the source-trunk correction to the diagnostic baseline
+        type: boolean
+        default: false
+      reviewed_pr319:
+        description: Build the approved PR319 commit and run native iCTS regressions
         type: boolean
         default: false
 permissions:
@@ -19,8 +23,8 @@ jobs:
       - name: Checkout pinned upstream tool source
         uses: actions/checkout@v4
         with:
-          repository: openecos-projects/ecc-tools
-          ref: dfb4a3b4f1181d81d0fec9f82d9abeaae942aec8
+          repository: ${{ inputs.reviewed_pr319 && 'hujian404/ecc-tools' || 'openecos-projects/ecc-tools' }}
+          ref: ${{ inputs.reviewed_pr319 && '3ba4d0ec58529a7bf890fb28ef9e427bb97f562a' || 'dfb4a3b4f1181d81d0fec9f82d9abeaae942aec8' }}
           persist-credentials: false
       - name: Checkout diagnostic proposal
         uses: actions/checkout@v4
@@ -32,6 +36,14 @@ jobs:
       - name: Trust the checked-out workspace in this container
         shell: bash
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Validate reviewed source selection
+        if: ${{ inputs.reviewed_pr319 }}
+        shell: bash
+        env:
+          APPLY_BASELINE_FIX: ${{ inputs.source_trunk_membership_fix }}
+        run: |
+          test "$APPLY_BASELINE_FIX" != true
+          test "$(git rev-parse HEAD)" = 3ba4d0ec58529a7bf890fb28ef9e427bb97f562a
       - name: Check and apply logging-only patch
         shell: bash
         run: |
@@ -40,7 +52,7 @@ jobs:
           git rev-parse HEAD > diagnostic-source.txt
           sha256sum course/patches/cts-root-boundary-diagnostics.patch >> diagnostic-source.txt
       - name: Apply optional source-trunk membership candidate
-        if: ${{ inputs.source_trunk_membership_fix }}
+        if: ${{ inputs.source_trunk_membership_fix && !inputs.reviewed_pr319 }}
         shell: bash
         run: |
           git apply --check course/patches/cts-source-trunk-membership-candidate.patch
@@ -89,6 +101,38 @@ jobs:
           assert module.name.endswith(".so"), module
           print("Installed native module:", module)
           PY
+      - name: Build and run native iCTS regressions on the reviewed commit
+        if: ${{ inputs.reviewed_pr319 }}
+        shell: bash
+        run: |
+          ctest --test-dir build --show-only=json-v1 -R '^icts_' > reviewed-pr319-icts-discovery.json
+          /opt/python/cp311-cp311/bin/python - <<'PY'
+          import json, re
+          from pathlib import Path
+          tests = json.loads(Path("reviewed-pr319-icts-discovery.json").read_text())["tests"]
+          names = [test["name"] for test in tests]
+          assert len(names) >= 20, names
+          assert all(re.fullmatch(r"icts_[A-Za-z0-9_]+", name) for name in names), names
+          assert all("realtech" not in name for name in names), names
+          Path("reviewed-pr319-icts-targets.txt").write_text("\n".join(names) + "\n")
+          PY
+          mapfile -t test_targets < reviewed-pr319-icts-targets.txt
+          cmake --build build --parallel 2 --target "${test_targets[@]}"
+          ctest --test-dir build --output-on-failure -R '^icts_' \
+            --timeout 180 -j 2 --no-tests=error \
+            --output-junit reviewed-pr319-icts-tests.xml
+      - name: Upload reviewed native test evidence
+        if: ${{ always() && inputs.reviewed_pr319 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-pr319-native-tests
+          path: |
+            reviewed-pr319-icts-discovery.json
+            reviewed-pr319-icts-targets.txt
+            build/reviewed-pr319-icts-tests.xml
+            reviewed-pr319-icts-tests.xml
+            build/Testing/Temporary/LastTest.log
+          if-no-files-found: warn
       - name: Upload build configuration on failure
         if: failure()
         uses: actions/upload-artifact@v4
