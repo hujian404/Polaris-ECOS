@@ -19,3 +19,37 @@ ecc run --project /tmp/regular-clock-project \
 The tested template uses 50MHz, max_cap=0.45pF, root slew=0.05ns, max sink transition=0.4ns, max buffer transition=0.5ns, skew target=0.08ns, and BUFX8/12/16/20H7L. Confirm these in the native runtime log when using another tool version. `generation.json` records the generated inputs' identities. No synthesis/program-functional result is implied by an unconnected data path.
 
 Observed first rejected samples: compensation valid, cap bucket match true, slew bucket match false; raw cap=13, total physical load=30, source boundary=8, raw input slew=1, root output slew=20. These are bucket indices. Only one rejected sample per explored depth was logged; they do not describe every rejected candidate. The full processor separately returned total-load/root-slew buckets 32/22. All seven full-design depth candidates were rejected. See [ECC #357](https://github.com/openecos-projects/ecc/issues/357) for the native diagnostic context; the separate source-trunk connection correction is [draft PR #319](https://github.com/openecos-projects/ecc-tools/pull/319).
+
+## Matched mixed and regular-only controls
+
+`--layout mixed` keeps the template's nine real macros, excludes DFF positions that overlap their LEF bounding boxes, and produces 4,014 DFFs on the tested 64x64 grid. `--layout masked` uses exactly the same DFF records but omits the macro instances and their clock loads. Macro obstacles also disappear in the masked case: this is a useful comparison, but it cannot isolate domain-latency balancing alone. `--layout regular` retains the original 4,096-sink fixture and is the default.
+
+The two added layouts require `--sram-root`, an external directory containing `<master>/lef/*.lef` for each of the three official SRAM masters. These files are read for dimensions and are never embedded in the generated material. The template's external configuration dependencies must also remain available.
+
+```sh
+python3 repro/regular-clock-spatial/generate.py \
+  --template /path/to/nine-macro-project \
+  --pdk "$CHIPCOMPILER_ICS55_PDK_ROOT" \
+  --sram-root /path/to/ics55-sram \
+  --out /tmp/mixed-clock-project --layout mixed --max-cap 0.25
+
+python3 repro/regular-clock-spatial/generate.py \
+  --template /path/to/nine-macro-project \
+  --pdk "$CHIPCOMPILER_ICS55_PDK_ROOT" \
+  --sram-root /path/to/ics55-sram \
+  --out /tmp/masked-clock-project --layout masked --max-cap 0.25
+```
+
+The default regular fixture and the mixed/masked 0.25 pF fixtures were regenerated from this public script: all three input files per case match the actually executed native fixtures by SHA256, and all three generated projects pass `ecc check`. These checks validate reproducibility/configuration, not timing quality.
+
+Observed final native optimized skew, with all other tested clock constraints unchanged:
+
+| Search cap budget | Mixed: 9 macros + 4,014 DFFs | Masked: same 4,014 DFFs |
+| --- | --- | --- |
+| 0.20 pF | 3.561640 ns | 0.257067 ns |
+| 0.25 pF | 2.325930 ns | 0.129273 ns |
+| 0.30 pF | 4.146970 ns | 0.479626 ns |
+
+All six trees commit, but **none meets the 0.08 ns target**. Controllers terminate after final native optimization reports the miss and preserve the interrupted wrapper state. Zero setup/hold violations in these clock-only fixtures with no data endpoints do not establish processor timing closure. The masked results show that significant skew also exists inside the regular domain; mixed-domain balancing is not the only unresolved concern. No full processor success follows from this table.
+
+For a stricter leaf-fanout control, `--max-fanout 16` writes the supported **`[params.cts].max_fanout`** setting. The workspace generator overwrites a native template's fanout from project parameters, so editing only that template is insufficient. Check the native `Maximum Fanout` runtime row. This structural control has been observed to take effect, but no timing-pass result is claimed here. The original imported SDC remains unchanged; this tightens the CTS fanout budget rather than weakening its limit.
