@@ -1,6 +1,11 @@
 name: Build CTS diagnostic tool
 on:
   workflow_dispatch:
+    inputs:
+      source_trunk_membership_fix:
+        description: Apply the unvalidated source-trunk membership candidate
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -21,7 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hujian404/Polaris-ECOS
-          ref: a539da76e4dcb59f550389f61a823217aad42c79
+          ref: 5c9e5e3754804ff6f2ce761edce176362961e892
           path: course
           persist-credentials: false
       - name: Trust the checked-out workspace in this container
@@ -34,6 +39,13 @@ jobs:
           git apply course/patches/cts-root-boundary-diagnostics.patch
           git rev-parse HEAD > diagnostic-source.txt
           sha256sum course/patches/cts-root-boundary-diagnostics.patch >> diagnostic-source.txt
+      - name: Apply optional source-trunk membership candidate
+        if: ${{ inputs.source_trunk_membership_fix }}
+        shell: bash
+        run: |
+          git apply --check course/patches/cts-source-trunk-membership-candidate.patch
+          git apply course/patches/cts-source-trunk-membership-candidate.patch
+          sha256sum course/patches/cts-source-trunk-membership-candidate.patch >> diagnostic-source.txt
       - name: Configure Python extension development without embedding
         shell: bash
         run: |
