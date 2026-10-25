@@ -21,6 +21,22 @@ Both focused checks pass in WSL Ubuntu 22.04. The native integration result belo
 
 [Actions run 40156959057](https://github.com/hujian404/Polaris-ECOS/actions/runs/40156959057) successfully built and imported the candidate wheel. Its recorded source delta and digest were checked before installation; live process mappings confirmed the isolated candidate module. With identical nine-macro Verilog/DEF/SDC inputs to the failed control, native synthesis now reports `committed`, and optimization reaches **0.057312 ns** skew under the unchanged **0.08 ns** target. Native instantiation, evaluation and CTS output complete. Exported Verilog and DEF gzip CRC checks also pass.
 
-The fresh nine-macro integration run completed **CTS Success**, return **0**, in **12 minutes 34 seconds**, including geometry export. Its inputs match the failed control; Verilog/DEF gzip checks pass, and both compressed output hashes match the earlier candidate attempt. That earlier attempt hit an external 600-second limit during geometry export and remains recorded as `Ongoing`/`-15`; it is not relabeled as success. The longer run confirms the complete small-flow integration without relaxing electrical limits. A separate CTS-only processor probe is running; full processor root-boundary feasibility and later physical/signoff stages remain unproven.
+The fresh nine-macro integration run completed **CTS Success**, return **0**, in **12 minutes 34 seconds**, including geometry export. Its inputs match the failed control; Verilog/DEF gzip checks pass, and both compressed output hashes match the earlier candidate attempt. That earlier attempt hit an external 600-second limit during geometry export and remains recorded as `Ongoing`/`-15`; it is not relabeled as success. The longer run confirms the complete small-flow integration without relaxing electrical limits.
 
 The source-only correction is proposed upstream as [draft ecc-tools PR #319](https://github.com/openecos-projects/ecc-tools/pull/319). Its rebased connection functions match the native-tested candidate; the complete upstream test suite on the rebased commit has not been claimed as run. This pull request is separate from the logging-only diagnostic patch.
+
+## Remaining processor root-boundary failure
+
+The complete processor probe subsequently returned **Incomplete**: the nine-macro domain finished, but the 589,378 regular sinks could not close their H-tree root boundary. Across seven depths, 1,056,241 candidate evaluations were rejected and none closed. These are evaluations across depths, not unique physical designs. Each depth's first rejected sample has a matching source-boundary capacitance bucket but a mismatching slew bucket: total root load bucket 32, source-boundary branch bucket 8, and root output slew bucket 22. With the configured lattices, the first samples imply total estimated root load in (0.93, 0.96] pF and output slew in (0.70, 0.733333] ns. The capacitance-match flag compares a branch boundary estimate, so it does not establish that total load satisfies 0.45 pF. These first samples do not describe the cause distribution of every rejection or prove that pruning removed feasible solutions.
+
+The [regular-clock spatial reproducer](../repro/regular-clock-spatial/README.md) uses 4,096 real standard-cell flip-flops on the original die and reproduces the same class of root failure in about 11 seconds. Its generated Verilog, DEF and SDC hashes match the executed fixture, and the native configuration check passes. It is a synthetic clock-only fixture, with no processor data paths or functional/signoff equivalence.
+
+Mixed spatial proxies containing nine real macros and 4,014 flip-flops commit both sink domains with tighter search capacitance budgets, but still fail the unchanged 0.08 ns skew target:
+
+| Search capacitance budget | Final optimized skew |
+| --- | --- |
+| 0.20 pF | 3.56164 ns |
+| 0.25 pF | 2.32593 ns |
+| 0.30 pF | 4.14697 ns |
+
+Those proxy controllers explicitly terminate after final native optimization reports the missed target; their interrupted wrapper states are preserved. They are not CTS quality passes. Two full-processor, CTS-only diagnostics at 0.20/0.25 pF are collecting actual root feasibility and skew evidence under a two-hour bound. Original placement inputs, 50 MHz, slew limits, Liberty limits and the skew target remain unchanged. No routing or signoff promotion is authorized by these diagnostic results, and full SRAM processor closure remains incomplete.
