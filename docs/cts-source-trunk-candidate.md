@@ -16,3 +16,9 @@ c++ -std=c++20 tests/cts-source-trunk/candidate.cpp -o /tmp/cts-candidate
 ```
 
 Both focused checks pass in WSL Ubuntu 22.04. They do not replace rebuilding the real tool and rerunning the nine-macro integration fixture. The regular-sink H-tree root-boundary failure of the full processor remains unresolved; this change does not establish feasibility or signoff. Frozen cacheless artifacts are unaffected. Upstream investigation: [ECC #357](https://github.com/openecos-projects/ecc/issues/357).
+
+## Native candidate execution
+
+[Actions run 40156959057](https://github.com/hujian404/Polaris-ECOS/actions/runs/40156959057) successfully built and imported the candidate wheel. Its recorded source delta and digest were checked before installation; live process mappings confirmed the isolated candidate module. With identical nine-macro Verilog/DEF/SDC inputs to the failed control, native synthesis now reports `committed`, and optimization reaches **0.057312 ns** skew under the unchanged **0.08 ns** target. Native instantiation, evaluation and CTS output complete. Exported Verilog and DEF gzip CRC checks also pass.
+
+The whole wrapper step is **not yet a complete pass**: geometry export exceeded the externally imposed 600-second limit, so its recorded state remains `Ongoing`, return `-15`. A fresh run allows 30 minutes for this tail; only complete step success plus an output audit permits processor CTS to start. The narrow connection correction is supported by native execution; full processor feasibility and signoff remain unproven.
