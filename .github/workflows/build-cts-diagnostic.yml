@@ -14,6 +14,10 @@ on:
         description: Add root rejection counters and frontier timing (requires reviewed_pr319)
         type: boolean
         default: false
+      post_root_stage_profile:
+        description: Add post-root stage checkpoints and preserve matching symbols (requires root_frontier_profile)
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -34,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hujian404/Polaris-ECOS
-          ref: 0cd8d448d9e203464f2fda5c0c5cdb5411ddaf2c
+          ref: 99d7562241efa7996f3c76276271de1c9bec31ec
           path: course
           persist-credentials: false
       - name: Trust the checked-out workspace in this container
@@ -72,6 +76,18 @@ jobs:
           git apply --check course/patches/cts-source-trunk-membership-candidate.patch
           git apply course/patches/cts-source-trunk-membership-candidate.patch
           sha256sum course/patches/cts-source-trunk-membership-candidate.patch >> diagnostic-source.txt
+      - name: Apply optional post-root stage checkpoints
+        if: ${{ inputs.post_root_stage_profile }}
+        shell: bash
+        env:
+          REVIEWED_SOURCE: ${{ inputs.reviewed_pr319 }}
+          FRONTIER_PROFILE: ${{ inputs.root_frontier_profile }}
+        run: |
+          test "$REVIEWED_SOURCE" = true
+          test "$FRONTIER_PROFILE" = true
+          git apply --check course/patches/cts-post-root-stage-profile.patch
+          git apply course/patches/cts-post-root-stage-profile.patch
+          sha256sum course/patches/cts-post-root-stage-profile.patch >> diagnostic-source.txt
       - name: Configure Python extension development without embedding
         shell: bash
         run: |
@@ -89,6 +105,53 @@ jobs:
           git diff > diagnostic-build.patch
       - name: Build with official upstream action
         uses: ./.github/actions/build-wheel
+      - name: Preserve text-matched native symbols when available
+        if: ${{ inputs.post_root_stage_profile }}
+        shell: bash
+        run: |
+          /opt/python/cp311-cp311/bin/python - <<'PY'
+          import hashlib, json, shutil, struct, zipfile
+          from pathlib import Path
+          def elf_text(raw):
+              assert raw[:6] == b'\x7fELF\x02\x01', 'Expected ELF64 little-endian module'
+              offset = struct.unpack_from('<Q', raw, 40)[0]
+              size, count, names_index = struct.unpack_from('<HHH', raw, 58)
+              sections = [struct.unpack_from('<IIQQQQIIQQ', raw, offset + index * size) for index in range(count)]
+              names_section = sections[names_index]
+              names = raw[names_section[4]:names_section[4] + names_section[5]]
+              by_name = {names[section[0]:].split(b'\0', 1)[0].decode(): section for section in sections}
+              text = by_name['.text']
+              return {'address': text[3], 'bytes': text[5], 'sha256': hashlib.sha256(raw[text[4]:text[4] + text[5]]).hexdigest()}, '.symtab' in by_name
+          wheels = list(Path('dist/wheel/repaired').glob('*.whl'))
+          assert len(wheels) == 1
+          with zipfile.ZipFile(wheels[0]) as archive:
+              modules = [name for name in archive.namelist() if name.endswith('/ecc_py.cpython-311-x86_64-linux-gnu.so')]
+              assert len(modules) == 1
+              native = archive.read(modules[0])
+          identity, _ = elf_text(native)
+          out = Path('diagnostic-symbols'); out.mkdir()
+          matched = []
+          for path in sorted(Path('build').rglob('ecc_py*.so')):
+              raw = path.read_bytes()
+              text, symbols = elf_text(raw)
+              if text != identity or not symbols:
+                  continue
+              destination = out / ('native-' + str(len(matched))) / path.name
+              destination.parent.mkdir()
+              shutil.copy2(path, destination)
+              matched.append({'build_path': str(path), 'artifact_path': str(destination), 'sha256': hashlib.sha256(raw).hexdigest(), 'has_symtab': symbols})
+          record = {'wheel_native_sha256': hashlib.sha256(native).hexdigest(), 'text_identity': identity, 'matching_modules': matched, 'scope': 'Symbol modules usable only after matching the exact native text identity. Empty matches mean no symbol artifact was available.'}
+          (out / 'symbol-provenance.json').write_text(json.dumps(record, indent=2) + '\n')
+          print(json.dumps(record, indent=2))
+          PY
+      - name: Upload matching symbol evidence
+        if: ${{ inputs.post_root_stage_profile }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cts-diagnostic-symbols
+          path: diagnostic-symbols/
+          retention-days: 7
+          if-no-files-found: error
       - name: Record and upload compiled diagnostic wheel
         shell: bash
         run: sha256sum dist/wheel/repaired/*.whl >> diagnostic-source.txt
