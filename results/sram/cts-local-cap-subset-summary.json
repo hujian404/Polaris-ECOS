@@ -353,7 +353,17 @@
   },
   "completion_followup": {
     "scope": "Reuse CTS for bounded legalization, route/fill and early Harden, then independent checks; skip repeated long Sizer optimization. Preserve actual failures and violation counts. Clean up native children after completion/time budget.",
-    "state_at_recording": "running_legalization",
-    "final_routed_gds_available": false
+    "state_at_recording": "running_routing",
+    "final_routed_gds_available": false,
+    "legalization": {
+      "native_state": "Success",
+      "returncode": 0,
+      "stage_runtime": "0:56:35",
+      "command_wall_seconds": 3511.4828985510394
+    },
+    "routing": {
+      "native_state": "Ongoing",
+      "routed_output_not_yet_verified": true
+    }
   }
 }
