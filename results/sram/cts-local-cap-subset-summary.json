@@ -288,5 +288,46 @@
       "src/operation/iCTS/test/module/synthesis/htree/SinkLoadRegionSplitTest.cc"
     ]
   },
-  "scope": "Aggregate evidence only; no PDK/IP views. Full processor clock tree committed, optimized skew 4.973095ns exceeds 0.08ns. No routed GDS or signoff pass. Earlier two-hour observations remain historical."
+  "scope": "Aggregate evidence only; no PDK/IP views. Full processor clock tree committed, optimized skew 4.973095ns exceeds 0.08ns. No routed GDS or signoff pass. Earlier two-hour observations remain historical.",
+  "expanded_buffer_proxy_control": {
+    "input_hashes": {
+      "clock.sdc": "3507f7bd40da4fe2face221873a6eadb941faa650fe30898fed28665fd57e822",
+      "clock.def": "68fd3e4bbf3603b1f5dcbc729747b5dfddb37b40777b166d44f64c84f1289ce2",
+      "clock.v": "88471c88b2a26a964400b5eb07c93207d0c382ed768771e3000ed2036f1afc13"
+    },
+    "native_module_sha256": "1990cc2b7f42fe3a59570356ae479124c4822629176568ab000e8548c7e6c069",
+    "native_mapping_verified": true,
+    "generated_config_only_buffer_type_differs": true,
+    "buffer_type": {
+      "before": [
+        "BUFX8H7L",
+        "BUFX12H7L",
+        "BUFX16H7L",
+        "BUFX20H7L"
+      ],
+      "after": [
+        "BUFX2H7L",
+        "BUFX4H7L",
+        "BUFX8H7L",
+        "BUFX12H7L",
+        "BUFX16H7L",
+        "BUFX20H7L"
+      ]
+    },
+    "sinks": 4023,
+    "baseline_optimized_skew_ns": 2.35555,
+    "expanded_initial_skew_ns": 5.77082,
+    "expanded_optimized_skew_ns": 3.4057,
+    "target_skew_ns": 0.08,
+    "solver_mode": "exact_full_power_batch",
+    "generated_candidates": 10487,
+    "accepted_sizing_edits": 152,
+    "clock_tree_committed": true,
+    "quality_passed": false,
+    "wall_seconds": 351.8435232359916,
+    "stop_reason": "diagnostic_final_optimization_checkpoint",
+    "native_state": "Ongoing",
+    "returncode": -15,
+    "decision": "Do not promote to full processor: mixed proxy skew worsened. Proxy uses exact solver; complete processor uses scalable solver, so no direct algorithm-equivalence claim."
+  }
 }

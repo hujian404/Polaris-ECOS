@@ -32,7 +32,7 @@ The six-hour-budget attempt has now **committed the full processor clock tree** 
 
 At the checkpoint, native main-flow/output stages had completed but the enclosing ECC process remained alive and `home/flow.json` still recorded Ongoing. Its final return/state will be recorded separately. The CTS GDS is a placement-stage export, not routed/signoff GDS; the SRAM package also lacks transistor-level macro GDS. No timing/electrical target is waived and downstream routing is not promoted. [Aggregate evidence](../results/sram/cts-local-cap-subset-summary.json) preserves both the earlier external stops and the verified full-tree checkpoint.
 
-The next bounded mixed-domain proxy control adds existing X2/X4 cells to the original X8/X12/X16/X20 choices, preserving the same input files and targets. It tests candidate coverage before any further full-scale attempt; it is not a processor/signoff result.
+A bounded mixed-domain proxy control added existing X2/X4 cells to the original X8/X12/X16/X20 choices. Native module mapping, unchanged V/DEF/SDC hashes and generated configuration were checked; only the buffer list differs from the reference configuration. It committed the 4,023-sink tree and tried 10,487 candidates, accepting 152 sizing edits; skew improved within that run from 5.77082 ns to **3.4057 ns**, but remains worse than the original-list baseline **2.35555 ns** and above 0.08 ns. The controller deliberately stopped at final optimization (351.84 s, native Ongoing/-15). The proxy uses `exact_full_power_batch`, whereas the complete processor selects the scalable solver; this is not a direct optimizer-equivalence experiment. The expanded list is not promoted to a full processor retry.
 
 ## Upstream contribution
 
