@@ -26,7 +26,13 @@ The seven-level post-root scopes now complete in **43.713 seconds** in total, in
 
 This demonstrates further search progress. It is not a controlled whole-flow speedup measurement: the original profile lacks post-root scope timers, and its silent interval cannot be attributed exclusively to region filtering. A separate existing-tcmalloc control also reached the two-hour external bound without a tree commit; changing the allocator has not established CTS closure.
 
-The validated code candidate is now running with a six-hour wall limit to let the remaining plans finish. Only the resource budget changes; no timing, capacitance, fanout or skew target is waived. [Aggregate evidence](../results/sram/cts-local-cap-subset-summary.json) distinguishes completed diagnostics from this pending extended attempt.
+The six-hour-budget attempt has now **committed the full processor clock tree** on the same inputs: 589,378 regular sinks plus nine macro sinks, selected regular H-tree depth four, 20,395 inserted buffers. The native CTS main flow completed in **99 min 29 s** and stable V/DEF/placement GDS exports were produced. A 1.164 GB checkpoint archive and all 14 evidence/output files were verified after local retrieval. This is an observed progress result; the previous default-allocator trial was capped, so no controlled end-to-end speedup ratio is claimed.
+
+**Clock quality remains unmet:** optimized skew is **4.973095 ns** against **0.08 ns**, insertion latency range **1.451389–6.424484 ns**. The scalable sizing optimizer generated/tried three candidates, accepted zero edits and stopped at `no_improving_candidate`. Two trials were capacitance-rejected and two slew-rejected; these counts can overlap. One logged rejected master change is the macro root from BUFX12H7L to BUFX8H7L, with a pre-existing over-limit slew worsening by about 2.29e-7 ns. This isolated diagnostic does not establish that numerical tolerance is the sole blocker or justify weakening electrical constraints.
+
+At the checkpoint, native main-flow/output stages had completed but the enclosing ECC process remained alive and `home/flow.json` still recorded Ongoing. Its final return/state will be recorded separately. The CTS GDS is a placement-stage export, not routed/signoff GDS; the SRAM package also lacks transistor-level macro GDS. No timing/electrical target is waived and downstream routing is not promoted. [Aggregate evidence](../results/sram/cts-local-cap-subset-summary.json) preserves both the earlier external stops and the verified full-tree checkpoint.
+
+The next bounded mixed-domain proxy control adds existing X2/X4 cells to the original X8/X12/X16/X20 choices, preserving the same input files and targets. It tests candidate coverage before any further full-scale attempt; it is not a processor/signoff result.
 
 ## Upstream contribution
 

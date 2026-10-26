@@ -223,10 +223,60 @@
   "extended_attempt": {
     "label": "openbpu-sram-cap250-local-cap-40289508333-long",
     "wall_limit_seconds": 21600,
-    "state_at_recording": "running",
+    "state_at_recording": "native_tree_committed_wrapper_still_ongoing",
     "native_mapping_verified": true,
     "same_original_inputs_verified": true,
-    "scope": "Pending extended CTS-only trial with default allocator. Timing/electrical targets unchanged; no routing or signoff promotion."
+    "scope": "Original inputs and targets preserved. Full clock tree committed; skew target unmet. Native CTS main flow and stable exports completed; wrapper still Ongoing at snapshot. No routing/signoff promotion.",
+    "verified_checkpoint": {
+      "archive_sha256": "b59b5f0c62c3f4b5e44a6b5fa50dab217cbfc83d295a53a2922003e3bd55e9fc",
+      "files_verified": 14,
+      "archive_members_verified": 15,
+      "clock_tree_committed": true,
+      "clock_quality_passed": false,
+      "native_main_flow_seconds": 5969,
+      "inserted_buffers": 20395,
+      "selected_regular_htree_depth": 4,
+      "timing_quality": {
+        "schema_version": 1,
+        "analysis_stage": "cts_fast_sta_post_optimization",
+        "availability": "available",
+        "clock_count": 1,
+        "clocks": [
+          {
+            "clock": "clock",
+            "sink_count": 589387,
+            "target_skew_ns": 0.08,
+            "initial_skew_ns": 4.973095042900601,
+            "optimized_skew_ns": 4.973095042900601,
+            "min_insertion_latency_ns": 1.4513886983811877,
+            "max_insertion_latency_ns": 6.424483741281788,
+            "mean_insertion_latency_ns": 4.514231082064717,
+            "target_met": false
+          }
+        ],
+        "worst_optimized_skew_ns": 4.973095042900601,
+        "worst_max_insertion_latency_ns": 6.424483741281788,
+        "target_unmet_count": 1
+      },
+      "native_module_sha256": "1990cc2b7f42fe3a59570356ae479124c4822629176568ab000e8548c7e6c069",
+      "input_hashes": {
+        "Polaris.v.gz": "4a5458b1a1c4c5900966f4cdf5f9d50d80f8021d1d3d86c07b63524896c18a20",
+        "Polaris.def.gz": "855f328ee9741531c098ac1d70db3fa552b21462fd922a0dcf5e93aa8c3e07ec",
+        "Polaris.sdc": "c9b152dae34948702568abdc996bf0b1c8803a35bc97d67be512a8cc9a779ea3"
+      },
+      "execution_state_at_snapshot": "running",
+      "optimizer": {
+        "mode": "scalable_timing_only_batch",
+        "generated_candidates": 3,
+        "trials": 3,
+        "accepted_edits": 0,
+        "cap_rejected": 2,
+        "slew_rejected": 2,
+        "stop_reason": "no_improving_candidate",
+        "rejection_counts_can_overlap": true
+      },
+      "scope": "Full CTS tree committed and stable outputs locally verified. The observed native process had not returned; no wrapper completion claim. Clock skew misses 0.08 ns; no routing or signoff promotion. CTS GDS is a placement export and lacks transistor-level SRAM macro geometry."
+    }
   },
   "upstream_draft": {
     "url": "https://github.com/openecos-projects/ecc-tools/pull/320",
@@ -238,5 +288,5 @@
       "src/operation/iCTS/test/module/synthesis/htree/SinkLoadRegionSplitTest.cc"
     ]
   },
-  "scope": "Aggregate evidence only. No PDK/IP views. No full processor clock-tree commit, CTS quality or signoff pass is established by these results."
+  "scope": "Aggregate evidence only; no PDK/IP views. Full processor clock tree committed, optimized skew 4.973095ns exceeds 0.08ns. No routed GDS or signoff pass. Earlier two-hour observations remain historical."
 }
