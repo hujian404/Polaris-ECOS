@@ -1,0 +1,198 @@
+{
+  "source_commit": "3ba4d0ec58529a7bf890fb28ef9e427bb97f562a",
+  "build_url": "https://github.com/hujian404/Polaris-ECOS/actions/runs/40214930653",
+  "native_tests": {
+    "passed": 23,
+    "failed": 0,
+    "skipped": 0
+  },
+  "native_module_sha256": "00576319eda21f1736f3993f0a7bbb449bba1ba37203f36961e245079291382d",
+  "scope": "Additive instrumentation only. Clock-only controls match reviewed-head baseline behavior; full SRAM processor remains uncommitted and unsigned off. Counters span native executions, not unique physical topologies. Cap/slew mismatch marginals may overlap.",
+  "regular_control": {
+    "native_state": "Incomplete",
+    "native_module_mapping_verified": true,
+    "rejection_sequence_identical_to_reviewed_head": true,
+    "closure_calls": 8,
+    "root_totals_across_executions": {
+      "input": 78540,
+      "closed": 0,
+      "rejected": 78540,
+      "invalid_compensation": 0,
+      "cap_mismatch_events": 0,
+      "slew_mismatch_events": 78540
+    },
+    "counter_conservation_passed": true,
+    "native_log_sha256": "49cc4fd3fd680df607639a34e38302c8c153185b1fdc0731941587f8edb65b9f",
+    "baseline_log_sha256": "dc6b64ea1b59c16f87b5f02db2f97d49ac5b31cd2371f7e26e1ab679457d0991",
+    "scope": "4096-DFF clock-only fixture. Counts span repeated native executions, not unique physical topologies. All evaluated candidates in this fixture fail the slew consistency boundary; this does not prove missing feasible patterns or physical infeasibility of the processor."
+  },
+  "nine_macro_control": {
+    "skew_ns": 0.057312,
+    "v_def_hashes_match_prior_success": true,
+    "outputs": [
+      {
+        "sha256": "58ec7792a1b0ca6215b5790e6df333652b5ad467893cb7a1552133197c16eda7",
+        "gzip_crc_valid": true
+      },
+      {
+        "sha256": "2634dc63b2dc8a840cd6e19c2abbeb862a2853dfee635b6040b19b1ee406da3b",
+        "gzip_crc_valid": true
+      }
+    ],
+    "native_state": "Ongoing",
+    "returncode": -15,
+    "stop_reason": "diagnostic_matching_native_output_checkpoint"
+  },
+  "mixed_control": {
+    "skew_ns": 2.35555,
+    "same_head_uninstrumented_baseline_skew_ns": 2.35555,
+    "skew_target_ns": 0.08,
+    "quality_passed": false,
+    "native_state": "Ongoing",
+    "returncode": -15,
+    "stop_reason": "diagnostic_final_optimization_checkpoint"
+  },
+  "processor_profile": {
+    "max_cap_pf": 0.25,
+    "input_hashes": {
+      "Polaris.v.gz": "4a5458b1a1c4c5900966f4cdf5f9d50d80f8021d1d3d86c07b63524896c18a20",
+      "Polaris.def.gz": "855f328ee9741531c098ac1d70db3fa552b21462fd922a0dcf5e93aa8c3e07ec",
+      "Polaris.sdc": "c9b152dae34948702568abdc996bf0b1c8803a35bc97d67be512a8cc9a779ea3"
+    },
+    "native_state": "Ongoing",
+    "returncode": -15,
+    "stop_reason": "external_timeout",
+    "external_timeout_seconds": 7200,
+    "clock_tree_committed": false,
+    "counter_conservation_passed": true,
+    "root_closures": [
+      {
+        "depth": 1,
+        "input": 190198,
+        "closed": 95794,
+        "rejected": 94404,
+        "invalid_compensation": 0,
+        "cap_mismatch_events": 0,
+        "slew_mismatch_events": 94404,
+        "load_cache_hits": 188506,
+        "cost_cache_hits": 189893,
+        "load_resolution_ms": 13.4846,
+        "direct_lookup_ms": 4.92614,
+        "elapsed_ms": 79.397
+      },
+      {
+        "depth": 7,
+        "input": 15390656,
+        "closed": 8881686,
+        "rejected": 6508970,
+        "invalid_compensation": 0,
+        "cap_mismatch_events": 0,
+        "slew_mismatch_events": 6508970,
+        "load_cache_hits": 15390305,
+        "cost_cache_hits": 15390572,
+        "load_resolution_ms": 1074.09,
+        "direct_lookup_ms": 2.70607,
+        "elapsed_ms": 7812.92
+      }
+    ],
+    "composition_summaries": [
+      {
+        "pairs": 265578,
+        "upstream": 26583,
+        "downstream": 930,
+        "semantic_rejected": 131910,
+        "cost_dominated": 87702,
+        "committed": 45966,
+        "removed": 11243,
+        "states": 31230,
+        "largest_bucket": 2,
+        "output": 34723,
+        "elapsed_ms": 52.9989
+      },
+      {
+        "pairs": 10930718,
+        "upstream": 26142,
+        "downstream": 34723,
+        "semantic_rejected": 6567000,
+        "cost_dominated": 3594573,
+        "committed": 769145,
+        "removed": 439176,
+        "states": 187785,
+        "largest_bucket": 30,
+        "output": 329969,
+        "elapsed_ms": 1344.51
+      },
+      {
+        "pairs": 59092215,
+        "upstream": 25470,
+        "downstream": 329969,
+        "semantic_rejected": 31076865,
+        "cost_dominated": 25766436,
+        "committed": 2248914,
+        "removed": 892102,
+        "states": 342285,
+        "largest_bucket": 53,
+        "output": 1356812,
+        "elapsed_ms": 7046.15
+      },
+      {
+        "pairs": 35537625,
+        "upstream": 5700,
+        "downstream": 1356812,
+        "semantic_rejected": 19041480,
+        "cost_dominated": 14359404,
+        "committed": 2136741,
+        "removed": 601322,
+        "states": 123600,
+        "largest_bucket": 86,
+        "output": 1535419,
+        "elapsed_ms": 4748.07
+      },
+      {
+        "pairs": 647535768,
+        "upstream": 349411,
+        "downstream": 1535419,
+        "semantic_rejected": 406199637,
+        "cost_dominated": 219415833,
+        "committed": 21920298,
+        "removed": 11506503,
+        "states": 357270,
+        "largest_bucket": 350,
+        "output": 10413795,
+        "elapsed_ms": 88866.3
+      },
+      {
+        "pairs": 10824862860,
+        "upstream": 165333,
+        "downstream": 10413795,
+        "semantic_rejected": 8199570148,
+        "cost_dominated": 2581295803,
+        "committed": 43996909,
+        "removed": 28606253,
+        "states": 163800,
+        "largest_bucket": 539,
+        "output": 15390656,
+        "elapsed_ms": 841775
+      }
+    ],
+    "last_progress": {
+      "pairs": 8192000000,
+      "upstream": 165333,
+      "downstream": 10413795,
+      "semantic_rejected": 6212440101,
+      "cost_dominated": 1946155793,
+      "committed": 33404105,
+      "largest_bucket": 539,
+      "elapsed_ms": 634428
+    },
+    "limitation": "Last root closure is followed by an uninstrumented interval; no exclusive post-root function attribution is supported yet."
+  },
+  "local_evidence_archive": {
+    "archive_sha256": "9d60a07da1bbe13adf9cde8a17635b5faeac337ffdc8130386486e607ab37983",
+    "files_verified": 33,
+    "processor_external_timeout_seconds": 7200,
+    "processor_native_state": "Ongoing",
+    "processor_clock_tree_committed": false,
+    "scope": "Evidence integrity only; no CTS or signoff pass."
+  }
+}
