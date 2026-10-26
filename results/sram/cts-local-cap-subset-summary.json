@@ -1,0 +1,242 @@
+{
+  "build_url": "https://github.com/hujian404/Polaris-ECOS/actions/runs/40289508333",
+  "tested_source_commit": "3ba4d0ec58529a7bf890fb28ef9e427bb97f562a",
+  "patches": {
+    "cts-root-boundary-diagnostics.patch": "cba7993af45047a08bde1f5d4dc248feb28e46f5415da4f04dbdaae1aef21f86",
+    "cts-root-frontier-profile.patch": "6e7ee8992af1e3330490ee562f43505e1d4e2147ef80cd81693371b1d529a296",
+    "cts-post-root-stage-profile.patch": "ae9d8ec156654addf703f220810b3fb09329c665935caf8c382726749e8d59ec",
+    "cts-local-cap-subset-candidate.patch": "6d7aaba5937172abaacc8f1ac9b1140ce01832b19fceeb366112dd2e619bcc74"
+  },
+  "wheel_sha256": "b3b925516e410ffed00c07a2becc3bbba24e440d56622c09c5f88512d95d381d",
+  "native_module_sha256": "1990cc2b7f42fe3a59570356ae479124c4822629176568ab000e8548c7e6c069",
+  "native_tests": {
+    "ctest_targets_passed": 23,
+    "failed": 0,
+    "skipped": 0,
+    "additional_cases_verified": [
+      "SinkLoadRegionSplitTest.UnrelatedPinCapsPreserveLegalAndSplitRecovery",
+      "SinkLoadRegionSplitTest.UnrelatedPinCapsDoNotMaskMissingLocalCap",
+      "SinkLoadRegionSplitTest.UnrelatedPinCapsPreserveCapFailureAndFallback"
+    ]
+  },
+  "clock_controls": {
+    "run_id": 40289508333,
+    "status": "controls_verified",
+    "local_cap_subset_candidate": true,
+    "native_module_sha256": "1990cc2b7f42fe3a59570356ae479124c4822629176568ab000e8548c7e6c069",
+    "cases": [
+      {
+        "kind": "regular45",
+        "label": "frontier-profile-regular45-40289508333",
+        "returncode": 1,
+        "stop_reason": null,
+        "final_skew_ns": null,
+        "input_hashes_match_baseline": true,
+        "native_mapping_verified": true
+      },
+      {
+        "kind": "nine45",
+        "label": "frontier-profile-nine45-40289508333",
+        "returncode": -15,
+        "stop_reason": "diagnostic_matching_native_output_checkpoint",
+        "final_skew_ns": 0.057312,
+        "input_hashes_match_baseline": true,
+        "native_mapping_verified": true
+      },
+      {
+        "kind": "mixed250",
+        "label": "frontier-profile-mixed250-40289508333",
+        "returncode": -15,
+        "stop_reason": "diagnostic_final_optimization_checkpoint",
+        "final_skew_ns": 2.35555,
+        "input_hashes_match_baseline": true,
+        "native_mapping_verified": true
+      }
+    ],
+    "scope": "Clock-only behavioral and counter gates. Existing proxy skew remains over target; no processor quality/signoff pass implied."
+  },
+  "full_scale_observation": {
+    "candidate_run_id": 40289508333,
+    "candidate_native_sha256": "1990cc2b7f42fe3a59570356ae479124c4822629176568ab000e8548c7e6c069",
+    "same_input_hashes": {
+      "Polaris.v.gz": "4a5458b1a1c4c5900966f4cdf5f9d50d80f8021d1d3d86c07b63524896c18a20",
+      "Polaris.def.gz": "855f328ee9741531c098ac1d70db3fa552b21462fd922a0dcf5e93aa8c3e07ec",
+      "Polaris.sdc": "c9b152dae34948702568abdc996bf0b1c8803a35bc97d67be512a8cc9a779ea3"
+    },
+    "prior_default_composition_counters_match_prefix": true,
+    "prior_default_seven_level_root_counts_match": {
+      "input": 15390656,
+      "closed": 8881686,
+      "rejected": 6508970,
+      "invalid_compensation": 0,
+      "cap_mismatch_events": 0,
+      "slew_mismatch_events": 6508970
+    },
+    "candidate_state": "Ongoing",
+    "candidate_stop_reason": "external_timeout",
+    "candidate_wall_limit_seconds": 7200,
+    "candidate_clock_tree_committed": false,
+    "completed_post_root_scopes": [
+      {
+        "depth": 1,
+        "stage": "state_frontier",
+        "output": 95369,
+        "elapsed_ms": 74.7813
+      },
+      {
+        "depth": 1,
+        "stage": "fanout_filter",
+        "output": 95369,
+        "elapsed_ms": 4.98041
+      },
+      {
+        "depth": 1,
+        "stage": "pattern_library_copy",
+        "elapsed_ms": 7.48014
+      },
+      {
+        "depth": 1,
+        "stage": "region_filter",
+        "input": 95369,
+        "output": 95369,
+        "cached_signatures": 1342,
+        "elapsed_ms": 121.886
+      },
+      {
+        "depth": 1,
+        "stage": "best_char_selection",
+        "elapsed_ms": 11.0922
+      },
+      {
+        "depth": 7,
+        "stage": "state_frontier",
+        "output": 8780629,
+        "elapsed_ms": 3554.47
+      },
+      {
+        "depth": 7,
+        "stage": "fanout_filter",
+        "output": 8780629,
+        "elapsed_ms": 494.355
+      },
+      {
+        "depth": 7,
+        "stage": "pattern_library_copy",
+        "elapsed_ms": 1653.12
+      },
+      {
+        "depth": 7,
+        "stage": "region_filter",
+        "input": 8780629,
+        "output": 8780629,
+        "cached_signatures": 92,
+        "elapsed_ms": 36121.9
+      },
+      {
+        "depth": 7,
+        "stage": "best_char_selection",
+        "elapsed_ms": 1889.49
+      },
+      {
+        "depth": 6,
+        "stage": "state_frontier",
+        "output": 17066671,
+        "elapsed_ms": 9712.3
+      },
+      {
+        "depth": 6,
+        "stage": "fanout_filter",
+        "output": 17066671,
+        "elapsed_ms": 1125.49
+      },
+      {
+        "depth": 6,
+        "stage": "pattern_library_copy",
+        "elapsed_ms": 2831.88
+      },
+      {
+        "depth": 6,
+        "stage": "region_filter",
+        "input": 17066671,
+        "output": 17066671,
+        "cached_signatures": 117,
+        "elapsed_ms": 17213.5
+      },
+      {
+        "depth": 6,
+        "stage": "best_char_selection",
+        "elapsed_ms": 4135.08
+      },
+      {
+        "depth": 5,
+        "stage": "state_frontier",
+        "output": 10521786,
+        "elapsed_ms": 6149.33
+      },
+      {
+        "depth": 5,
+        "stage": "fanout_filter",
+        "output": 10521786,
+        "elapsed_ms": 501.44
+      },
+      {
+        "depth": 5,
+        "stage": "pattern_library_copy",
+        "elapsed_ms": 1621.63
+      },
+      {
+        "depth": 5,
+        "stage": "region_filter",
+        "input": 10521786,
+        "output": 10521786,
+        "cached_signatures": 170,
+        "elapsed_ms": 48585.3
+      },
+      {
+        "depth": 5,
+        "stage": "best_char_selection",
+        "elapsed_ms": 2446.09
+      }
+    ],
+    "seven_level_post_root_total_ms": 43713.335,
+    "last_active_composition": {
+      "depth": 4,
+      "reverse_level": 1,
+      "upstream": 165333,
+      "downstream": 3976129
+    },
+    "completed_composition_calls": 17,
+    "counter_conservation_passed": true,
+    "allocator_control": {
+      "state": "Ongoing",
+      "stop_reason": "external_timeout",
+      "clock_tree_committed": false,
+      "native_sha256": "00576319eda21f1736f3993f0a7bbb449bba1ba37203f36961e245079291382d",
+      "allocator": {
+        "path": "/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4.5.9",
+        "sha256": "572af05b75e2366a3e8c06c29d3a04c0a538c9635c9957f2808846730ab81da5"
+      }
+    },
+    "raw_log_sha256": "873992dc2318dadd9276668e50b38e273c609aec275aafa04c5cc6b111c3545a",
+    "scope": "Observed progress on unchanged placed inputs and electrical limits. The original default-allocator run lacks post-root scope timers, so its silent interval cannot be assigned exclusively to region filtering. No controlled end-to-end speedup, CTS quality or signoff pass is established."
+  },
+  "extended_attempt": {
+    "label": "openbpu-sram-cap250-local-cap-40289508333-long",
+    "wall_limit_seconds": 21600,
+    "state_at_recording": "running",
+    "native_mapping_verified": true,
+    "same_original_inputs_verified": true,
+    "scope": "Pending extended CTS-only trial with default allocator. Timing/electrical targets unchanged; no routing or signoff promotion."
+  },
+  "upstream_draft": {
+    "url": "https://github.com/openecos-projects/ecc-tools/pull/320",
+    "head_commit": "24f3dd666ae1944ccb0fffc98dc227590dc29340",
+    "base_commit": "8670acb6a7507ed56d5beba5ee1365350f98e511",
+    "author_account": "hujian404",
+    "changed_files": [
+      "src/operation/iCTS/source/module/synthesis/htree/region/SinkLoadRegion.cc",
+      "src/operation/iCTS/test/module/synthesis/htree/SinkLoadRegionSplitTest.cc"
+    ]
+  },
+  "scope": "Aggregate evidence only. No PDK/IP views. No full processor clock-tree commit, CTS quality or signoff pass is established by these results."
+}
