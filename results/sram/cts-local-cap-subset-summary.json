@@ -223,10 +223,10 @@
   "extended_attempt": {
     "label": "openbpu-sram-cap250-local-cap-40289508333-long",
     "wall_limit_seconds": 21600,
-    "state_at_recording": "native_tree_committed_wrapper_still_ongoing",
+    "state_at_recording": "native_success_quality_unmet",
     "native_mapping_verified": true,
     "same_original_inputs_verified": true,
-    "scope": "Original inputs and targets preserved. Full clock tree committed; skew target unmet. Native CTS main flow and stable exports completed; wrapper still Ongoing at snapshot. No routing/signoff promotion.",
+    "scope": "Full CTS stage returned native Success/0; original skew target remains unmet. The earlier verified checkpoint preserves its observed Ongoing state. Downstream completion now proceeds under explicit output-priority authorization, without claiming signoff closure.",
     "verified_checkpoint": {
       "archive_sha256": "b59b5f0c62c3f4b5e44a6b5fa50dab217cbfc83d295a53a2922003e3bd55e9fc",
       "files_verified": 14,
@@ -276,11 +276,14 @@
         "rejection_counts_can_overlap": true
       },
       "scope": "Full CTS tree committed and stable outputs locally verified. The observed native process had not returned; no wrapper completion claim. Clock skew misses 0.08 ns; no routing or signoff promotion. CTS GDS is a placement export and lacks transistor-level SRAM macro geometry."
-    }
+    },
+    "final_returncode": 0,
+    "command_wall_seconds": 13031.996177227236,
+    "native_stage_runtime": "3:0:43"
   },
   "upstream_draft": {
     "url": "https://github.com/openecos-projects/ecc-tools/pull/320",
-    "head_commit": "24f3dd666ae1944ccb0fffc98dc227590dc29340",
+    "head_commit": "1ec587190039d165d91ab92c3ab4f41836f88863",
     "base_commit": "8670acb6a7507ed56d5beba5ee1365350f98e511",
     "author_account": "hujian404",
     "changed_files": [
@@ -329,5 +332,28 @@
     "native_state": "Ongoing",
     "returncode": -15,
     "decision": "Do not promote to full processor: mixed proxy skew worsened. Proxy uses exact solver; complete processor uses scalable solver, so no direct algorithm-equivalence claim."
+  },
+  "upstream_review_revision": {
+    "url": "https://github.com/openecos-projects/ecc-tools/pull/320",
+    "previous_head": "24f3dd666ae1944ccb0fffc98dc227590dc29340",
+    "head": "1ec587190039d165d91ab92c3ab4f41836f88863",
+    "files": {
+      "src/operation/iCTS/source/module/synthesis/htree/region/SinkLoadRegion.cc": [
+        6,
+        1
+      ],
+      "src/operation/iCTS/test/module/synthesis/htree/SinkLoadRegionSplitTest.cc": [
+        74,
+        0
+      ]
+    },
+    "comment_url": "https://github.com/openecos-projects/ecc-tools/pull/320#issuecomment-6421445379",
+    "draft": true,
+    "scope": "Formatting-only review correction; native-tested functional tokens preserved. Fresh CI pending."
+  },
+  "completion_followup": {
+    "scope": "Reuse CTS for bounded legalization, route/fill and early Harden, then independent checks; skip repeated long Sizer optimization. Preserve actual failures and violation counts. Clean up native children after completion/time budget.",
+    "state_at_recording": "running_legalization",
+    "final_routed_gds_available": false
   }
 }
