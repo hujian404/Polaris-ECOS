@@ -1,0 +1,104 @@
+--- a/src/operation/iCTS/source/module/synthesis/htree/topology_pruning/TopologyPruning.cc
++++ b/src/operation/iCTS/source/module/synthesis/htree/topology_pruning/TopologyPruning.cc
+@@ -415,10 +415,16 @@
+         = compensation_result.rejected_candidate_count > 0U ? "empty_frontier_after_root_boundary_closure" : "empty_frontier_after_compensation";
+     return result;
+   }
++  const auto post_state_start = std::chrono::steady_clock::now();
++  CTSLOG.info(Loc::current(), "HTree post-root stage begin: stage=state_frontier, depth=", levels.size(), ", input=", current_frontier_entries.size());
+   current_frontier_entries = BuildHTreeStateFrontier(current_frontier_entries, [&](const HTreeTopologyChar& entry) -> PatternCompositionState {
+     return result.topology_pattern_library.getCompositionState(entry.get_pattern_id());
+   });
++  CTSLOG.info(Loc::current(), "HTree post-root stage end: stage=state_frontier, depth=", levels.size(), ", output=", current_frontier_entries.size(), ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - post_state_start).count());
++  const auto post_fanout_start = std::chrono::steady_clock::now();
++  CTSLOG.info(Loc::current(), "HTree post-root stage begin: stage=fanout_filter, depth=", levels.size(), ", input=", current_frontier_entries.size());
+   current_frontier_entries = FilterRootFanoutLegalHTreeChars(current_frontier_entries, result.topology_pattern_library, fanout_config);
++  CTSLOG.info(Loc::current(), "HTree post-root stage end: stage=fanout_filter, depth=", levels.size(), ", output=", current_frontier_entries.size(), ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - post_fanout_start).count());
+   result.success = !current_frontier_entries.empty();
+   result.frontier = std::move(current_frontier_entries);
+   return result;
+@@ -597,7 +603,10 @@
+     return result;
+   }
+ 
++  const auto post_copy_start = std::chrono::steady_clock::now();
++  CTSLOG.info(Loc::current(), "HTree post-root stage begin: stage=pattern_library_copy, depth=", depth, ", nodes=", topology_assembly.topology_pattern_library.nodes.size());
+   result.topology_pattern_library = topology_assembly.topology_pattern_library;
++  CTSLOG.info(Loc::current(), "HTree post-root stage end: stage=pattern_library_copy, depth=", depth, ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - post_copy_start).count());
+   result.final_frontier_count = topology_assembly.frontier.size();
+   result.candidate_solution_count = topology_assembly.frontier.size();
+   if (has_boundary_constraints) {
+@@ -644,6 +653,8 @@
+       result.failure_reason = feasible_sink_load_region_filter.summary.first_failure_reason;
+     }
+   }
++  CTSLOG.info(Loc::current(), "HTree post-root stage begin: stage=best_char_selection, depth=", depth, ", feasible=", result.feasible_frontier_entries.size(), ", candidate=", result.candidate_frontier_entries.size());
++  const auto post_selection_start = std::chrono::steady_clock::now();
+   if (!result.feasible_frontier_entries.empty()) {
+     result.best_char = SelectBestHTreeChar(result.feasible_frontier_entries);
+   } else if (has_boundary_constraints && fanout_config.allow_boundary_relaxation) {
+@@ -655,6 +666,7 @@
+     }
+   }
+ 
++  CTSLOG.info(Loc::current(), "HTree post-root stage end: stage=best_char_selection, depth=", depth, ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - post_selection_start).count());
+   result.success = result.best_char.has_value();
+   if (!result.success && result.failure_reason.empty()) {
+     result.failure_reason = has_boundary_constraints && !fanout_config.allow_boundary_relaxation ? "no_strict_boundary_feasible_solution"
+--- a/src/operation/iCTS/source/module/synthesis/htree/region/SinkLoadRegion.cc
++++ b/src/operation/iCTS/source/module/synthesis/htree/region/SinkLoadRegion.cc
+@@ -26,6 +26,7 @@
+ #include <stdlib.h>
+ 
+ #include <algorithm>
++#include <chrono>
+ #include <cmath>
+ #include <cstddef>
+ #include <functional>
+@@ -413,14 +414,18 @@
+   result.bottom_most_buffered_level = signature.bottom_most_buffered_level;
+   result.segment_pattern_id = signature.segment_pattern_id;
+ 
++  CTSLOG.info(Loc::current(), "HTree post-root region collection begin: bottom_level=", signature.bottom_most_buffered_level, ", segment=", signature.segment_pattern_id.pack());
+   const auto collection = CollectSinkLoadRegionBoundaryGroups(topology, signature, segment_pattern_library);
++  CTSLOG.info(Loc::current(), "HTree post-root region collection end: groups=", collection.groups.size());
+   if (collection.violation != SinkLoadRegionViolation::kNone) {
+     result.failure_reason = collection.failure_reason;
+     result.violation = collection.violation;
+     return result;
+   }
+ 
++  CTSLOG.info(Loc::current(), "HTree post-root region electrical begin: groups=", collection.groups.size());
+   const auto electrical_config = BuildLeafElectricalConfig(legality_context.input, collection.groups);
++  CTSLOG.info(Loc::current(), "HTree post-root region electrical end: available=", electrical_config.config.has_value());
+   if (!electrical_config.config.has_value()) {
+     result.failure_reason = electrical_config.failure_reason.empty() ? "sink_pin_capacitance_unavailable" : electrical_config.failure_reason;
+     result.violation = SinkLoadRegionViolation::kPinCapUnavailable;
+@@ -1172,7 +1177,10 @@
+     return cache_it->second;
+   }
+ 
++  const auto post_region_eval_start = std::chrono::steady_clock::now();
++  CTSLOG.info(Loc::current(), "HTree post-root region eval begin: bottom_level=", signature.bottom_most_buffered_level, ", segment=", signature.segment_pattern_id.pack(), ", cached_signatures=", legality_context.result_by_signature.size());
+   auto evaluated = EvaluateSinkLoadRegionLegality(topology, signature, segment_pattern_library, legality_context);
++  CTSLOG.info(Loc::current(), "HTree post-root region eval end: bottom_level=", signature.bottom_most_buffered_level, ", segment=", signature.segment_pattern_id.pack(), ", legal=", evaluated.legal, ", split_groups=", evaluated.split_group_count, ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - post_region_eval_start).count());
+   if (!evaluated.legal && evaluated.monotone_hard_fail && signature.bottom_most_buffered_level > legality_context.max_monotone_failed_level) {
+     legality_context.max_monotone_failed_level = signature.bottom_most_buffered_level;
+     legality_context.first_monotone_hard_fail_reason = evaluated.failure_reason;
+@@ -1186,6 +1194,8 @@
+                                       const BufferPatternLibrary& segment_pattern_library, SinkLoadRegionLegalityContext& legality_context)
+     -> SinkLoadRegionEntryFilterBuild
+ {
++  const auto post_filter_start = std::chrono::steady_clock::now();
++  CTSLOG.info(Loc::current(), "HTree post-root region filter begin: input=", entries.size(), ", cached_signatures=", legality_context.result_by_signature.size());
+   SinkLoadRegionEntryFilterBuild result;
+   result.output.entries.reserve(entries.size());
+   for (const auto& entry : entries) {
+@@ -1208,6 +1218,7 @@
+     }
+     result.output.entries.push_back(entry);
+   }
++  CTSLOG.info(Loc::current(), "HTree post-root region filter end: input=", entries.size(), ", output=", result.output.entries.size(), ", cached_signatures=", legality_context.result_by_signature.size(), ", elapsed_ms=", std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - post_filter_start).count());
+   return result;
+ }
+ 
