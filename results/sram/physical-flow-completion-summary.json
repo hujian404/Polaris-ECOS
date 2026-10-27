@@ -1,0 +1,56 @@
+{
+  "scope": "Final state of this bounded SRAM completion attempt, not a successful full SRAM RTL-to-GDS/signoff run.",
+  "files_verified": 50,
+  "archive": {
+    "bytes": 1163458560,
+    "sha256": "b4ff6fedfadf0b675f15100bcdc7cce9759d03aa63f78b3f3498999dbfbcfd84"
+  },
+  "cts": {
+    "native_state": "Success",
+    "returncode": 0,
+    "clock_sinks": 589387,
+    "inserted_buffers": 20395,
+    "optimized_skew_ns": 4.973095042900601,
+    "target_skew_ns": 0.08,
+    "quality_passed": false
+  },
+  "legalization": {
+    "native_state": "Success",
+    "returncode": 0,
+    "runtime": "0:56:35",
+    "wall_seconds": 3511.4828985510394
+  },
+  "routing": {
+    "native_state": "Ongoing",
+    "returncode": -15,
+    "stop_reason": "external_time_budget",
+    "wall_limit_seconds": 21600,
+    "wall_seconds": 21606.891137360595,
+    "configured_threads": 32,
+    "initial_lz_nets_completed": 2850281,
+    "congestion_lz_nets_completed": 2850281,
+    "last_overflow_all_progress": {
+      "completed": 610100,
+      "total": 677888,
+      "percent": 90
+    },
+    "progress_scope": "One PlanarRouter subpass only, not overall routing percentage.",
+    "source_revision": "3ba4d0ec58529a7bf890fb28ef9e427bb97f562a",
+    "supported_fast_control_found": false,
+    "source_observation": "PlanarRouter executes these network tasks in a serial loop, followed by up to five hard-coded A* passes. Public routing Config has no fast/iteration/skip field; no same-parameter repeat was launched."
+  },
+  "not_started_after_route": [
+    "filler",
+    "Harden",
+    "drc",
+    "lvs",
+    "postRouteLec",
+    "RCX",
+    "sta",
+    "powerAnalysis"
+  ],
+  "final_routed_gds_available": false,
+  "resource_release_verified": true,
+  "active_child_pids": [],
+  "scope_limits": "CTS/legalization GDS is a placement-stage geometry export. It is not routed/signoff GDS and does not contain transistor-level SRAM macro geometry. Cacheless frozen results remain independent."
+}

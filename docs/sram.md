@@ -1,6 +1,6 @@
 # 真实 SRAM IP 集成：未闭合工作分支
 
-本分支是可继续开发的缓存配置。**已完成逻辑集成、有限门级程序检查和布局；CTS 尚未闭合，没有本配置的最终 GDS。** `results/cacheless/` 是 main 的对照资料，不是本分支通过结果。
+本分支是可继续开发的缓存配置。**已完成逻辑集成、有限门级程序检查、布局、CTS 与合法化；时钟质量未达标，布线达到外部时限，没有最终布线 GDS。** `results/cacheless/` 是 main 的对照资料，不是本分支通过结果。
 
 ## 接口与工艺视图
 
@@ -29,11 +29,13 @@ Icarus Verilog用于三类宏接口随机检查；系统程序需要支持 `--no
 
 原综合的2.568GB文本写gzip时发生计数宽度边界问题，不能把空gzip当成可用输出。Issue350附最小复现，`reproducers/gzip-overflow.cpp` 可独立检查。实验保留原始失败状态，从实际非空映射golden通过Yosys `rename -hide` 生成显式派生检查点；统计、端口、连接与宏数核对后再做有限门级验证。压缩后约63.5MB仍超过本仓库单文件策略，未进入Git。原始golden到派生输入的身份见 `results/sram/summary.json`；恢复输入不等于把原生综合流程标为Success。
 
+最新阶段结果与已释放的计算资源见 [流程收尾说明](sram-flow-completion.md)；以下 CTS 根边界记录保留早期诊断条件。
+
 ## CTS 诊断与继续方向
 
 映射规模2828964单元、面积约9.098mm²；低密度拥塞布局完成。原九宏聚类分支负载约0.407411pF，高于默认0.15pF；核对候选强驱动单元的全角上限后试验0.45pF预算。九宏缩小用例的优化偏斜0.057312ns低于0.08ns，但不是完整处理器CTS成功证据。
 
-完整设计中589378个普通时钟汇点仍出现 `no_strict_boundary_feasible_solution_any_depth`。分支缓冲器、零根输入转换时间、强单元与解析模式均未取得通过。7µm规划模式关闭对应边界原语模式后，在特征化结束后无新增输出，外部12小时限制终止进程；保存原生Ongoing并单独记录外部终止，未伪造完成状态。完整问题与观察见 [ECC Issue357](https://github.com/openecos-projects/ecc/issues/357)。
+早期完整设计中589378个普通时钟汇点出现 `no_strict_boundary_feasible_solution_any_depth`。分支缓冲器、零根输入转换时间、强单元与解析模式均未取得通过。7µm规划模式关闭对应边界原语模式后，在特征化结束后无新增输出，外部12小时限制终止进程；保存原生Ongoing并单独记录外部终止，未伪造完成状态。完整问题与观察见 [ECC Issue357](https://github.com/openecos-projects/ecc/issues/357)。
 
 九宏最小物理复现无需发布PDK：
 
@@ -42,7 +44,7 @@ python3 reproducers/materialize_sram_clock.py --pdk /opt/ecos/pdk \
   --sram /opt/ics55-sram --layermap /opt/ics55.layermap --out local/nine-macro
 ```
 
-该用例保留真实宏位置和时钟负载，只用于工具诊断，不保留处理器数据通路。生成项目可用原生ECC运行CTS；继续工作应首先定位根边界候选与特征规划、数据库高扇出导入开销。通过CTS后仍须布线、DRC/LVS、布线后LEC、寄生提取和十三角STA；目前没有可发布的SRAM签核结论。
+该用例保留真实宏位置和时钟负载，只用于工具诊断，不保留处理器数据通路。生成项目可用原生ECC运行CTS。后续局部电容表优化已使完整处理器完成CTS与合法化；当前继续工作应复用匹配检查点，分析路由规模与拥塞。CTS流程成功不等于偏斜达标；布线、物理检查、布线后LEC及提取后时序仍无本配置通过结论。
 
 发布封装检查：接口随机检查在公开目录重新通过，带宏配置的原生 `ecc check` 通过；RTL系统测试与有限门级结果为先前实际运行证据，本次发布没有重跑大规模映射和物理流程。
 

@@ -289,7 +289,10 @@
     "changed_files": [
       "src/operation/iCTS/source/module/synthesis/htree/region/SinkLoadRegion.cc",
       "src/operation/iCTS/test/module/synthesis/htree/SinkLoadRegionSplitTest.cc"
-    ]
+    ],
+    "draft": false,
+    "review_state": "APPROVED",
+    "merged": false
   },
   "scope": "Aggregate evidence only; no PDK/IP views. Full processor clock tree committed, optimized skew 4.973095ns exceeds 0.08ns. No routed GDS or signoff pass. Earlier two-hour observations remain historical.",
   "expanded_buffer_proxy_control": {
@@ -353,7 +356,7 @@
   },
   "completion_followup": {
     "scope": "Reuse CTS for bounded legalization, route/fill and early Harden, then independent checks; skip repeated long Sizer optimization. Preserve actual failures and violation counts. Clean up native children after completion/time budget.",
-    "state_at_recording": "running_routing",
+    "state_at_recording": "completion_attempt_stopped_after_routing_timeout",
     "final_routed_gds_available": false,
     "legalization": {
       "native_state": "Success",
@@ -363,7 +366,42 @@
     },
     "routing": {
       "native_state": "Ongoing",
-      "routed_output_not_yet_verified": true
+      "returncode": -15,
+      "stop_reason": "external_time_budget",
+      "wall_limit_seconds": 21600,
+      "wall_seconds": 21606.891137360595,
+      "configured_threads": 32,
+      "initial_lz_nets_completed": 2850281,
+      "congestion_lz_nets_completed": 2850281,
+      "last_overflow_all_progress": {
+        "completed": 610100,
+        "total": 677888,
+        "percent": 90
+      },
+      "progress_scope": "One PlanarRouter subpass only, not overall routing percentage.",
+      "source_revision": "3ba4d0ec58529a7bf890fb28ef9e427bb97f562a",
+      "supported_fast_control_found": false,
+      "source_observation": "PlanarRouter executes these network tasks in a serial loop, followed by up to five hard-coded A* passes. Public routing Config has no fast/iteration/skip field; no same-parameter repeat was launched."
+    },
+    "resource_release_verified": true,
+    "final_summary": "physical-flow-completion-summary.json"
+  },
+  "upstream_current_checks": [
+    {
+      "name": "Build Wheel",
+      "conclusion": "success"
+    },
+    {
+      "name": "Check commit messages and PR title",
+      "conclusion": "success"
+    },
+    {
+      "name": "Nix Build (flake checks)",
+      "conclusion": "success"
+    },
+    {
+      "name": "Test Python API",
+      "conclusion": "success"
     }
-  }
+  ]
 }

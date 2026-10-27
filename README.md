@@ -1,6 +1,6 @@
 # Polaris-ECOS — SRAM IP 工作分支
 
-> **当前为 `sram-ip`：CTS 尚未闭合，没有 SRAM 配置最终 GDS。** 已完成的无缓存基线请使用 [`main`](https://github.com/hujian404/Polaris-ECOS/tree/main) 或 `v1.0.0-cacheless`。当前分支的接口、配置、结果与继续方法见 [docs/sram.md](docs/sram.md)。
+> **当前为 `sram-ip`：CTS 与合法化已完成，时钟质量未达标；布线达到外部上限，没有 SRAM 配置最终 GDS。** 已完成的无缓存基线请使用 [`main`](https://github.com/hujian404/Polaris-ECOS/tree/main) 或 `v1.0.0-cacheless`。当前分支的接口、配置、结果与继续方法见 [docs/sram.md](docs/sram.md)。
 
 基于开源 **ECOS** 工具链，对开源脑启发处理器 **OpenBPU2 / Polaris** 进行 RTL 到 GDS 实现、验证和技术复现。
 
@@ -27,9 +27,11 @@
 | 分支/标签 | 默认配置 | 已完成范围 |
 |---|---|---|
 | `main` / `v1.0.0-cacheless` | 无外部 SRAM 宏的无缓存 RV64 Polaris | 综合、布局布线、零 DRC/LVS、布线后 LEC、50 MHz 十三角 setup/hold、GDS 导出 |
-| [`sram-ip`](https://github.com/hujian404/Polaris-ECOS/tree/sram-ip) | 九个硬宏和两类软 1R1W 阵列的缓存候选 | 宏接口/有限门级程序、布局；**CTS 未闭合，无该配置最终 GDS** |
+| [`sram-ip`](https://github.com/hujian404/Polaris-ECOS/tree/sram-ip) | 九个硬宏和两类软 1R1W 阵列的缓存候选 | 宏接口/有限门级程序、布局、CTS、合法化；**布线超时，时钟质量未达标，无最终布线 GDS** |
 
 `main` 冻结的是已记录的验证结果；新的工具版本、不同机器或重新运行仍须重新检查，不能继承本仓库的通过结论。`sram-ip` 作为可继续开发的工作分支，不能替代已完成基线。
+
+SRAM 本轮结果、资源释放与继续边界见 [流程收尾说明](docs/sram-flow-completion.md)。
 
 ## 已验证的无 SRAM 主实验
 
